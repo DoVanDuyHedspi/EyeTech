@@ -1,0 +1,18 @@
+{
+  "name": "EyeTech",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Nguyen Thanh Tung <tungbk.devjv@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
