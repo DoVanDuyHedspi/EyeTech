@@ -14,3 +14,8 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+//Route::get('/customers/create', 'TestController@create');
+//Route::get('/customers', 'TestController@index');
+
+Route::resource('test', 'TestController');
