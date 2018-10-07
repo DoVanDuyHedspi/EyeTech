@@ -26,8 +26,6 @@ class CustomerFormRequest extends FormRequest
         return [
             'vector' => 'required',
             'image_url_array' => 'required',
-            'gender' => 'required',
-            'age' => 'required',
         ];
     }
 }

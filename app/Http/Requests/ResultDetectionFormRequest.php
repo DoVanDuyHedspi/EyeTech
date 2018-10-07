@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ResultBeginnerFaceDetectionFormRequest extends FormRequest
+class ResultDetectionFormRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,8 +29,6 @@ class ResultBeginnerFaceDetectionFormRequest extends FormRequest
             'time_in' => 'required',
             'camera_id' => 'required',
             'image_camera_base64_array' => 'required',
-            'gender' => 'required',
-            'age' => 'required',
         ];
     }
 }

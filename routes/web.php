@@ -19,3 +19,6 @@ Route::get('/', function () {
 //Route::get('/customers', 'TestController@index');
 
 Route::resource('test', 'TestController');
+
+Route::get('base64-encode', 'TestController@test_base64');
+Route::get('base64-decode', 'TestController@test_decode');
