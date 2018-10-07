@@ -18,6 +18,7 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('customers/vector-id', 'CustomerController@getDataForIdVector');
     Route::apiResource('customers', 'CustomerController');
 
+    Route::get('cu/test', 'CustomerController@test');
     Route::post('events/result-detections', 'EventController@sendResultDetection');
     Route::apiResource('events', 'EventController');
 });

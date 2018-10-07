@@ -29,8 +29,23 @@ class CustomerController extends Controller
 
     public function store(CustomerFormRequest $request)
     {
-        $customer = Customer::create($request->all());
-        if (!$customer) {
+        $customer = new Customer();
+        $customer->vector = $request->input('vector');
+        $customer->image_url_array = $request->input('image_url_array');
+        $customer->name = $request->input('name');
+        $customer->age = $request->input('age');
+        $customer->gender = $request->input('gender');
+        $customer->telephone = $request->input('telephone');
+        $customer->address = [
+            'country' => $request->input('country'),
+            'city' => $request->input('city'),
+            'location' => $request->input('location'),
+        ];
+        $customer->favorites = $request->input('favorites');
+        $customer->type = $request->input('type');
+        $customer->note = $request->input('note');
+
+        if (!$customer->save()) {
             $response = [
                 'message' => 'Error: Create Customer Fail'
             ];
@@ -68,11 +83,9 @@ class CustomerController extends Controller
                         'age' => 'int',
                         'gender' => 'string',
                         'telephone' => 'int',
-                        'address' => [
-                            'country' => 'string',
-                            'city' => 'string',
-                            'location' => 'string'
-                        ],
+                        'country' => 'string',
+                        'city' => 'string',
+                        'location' => 'string',
                         'favorites' => 'string',
                         'type' => 'string',
                         'note' => 'string',
@@ -110,11 +123,9 @@ class CustomerController extends Controller
                         'age' => 'int',
                         'gender' => 'string',
                         'telephone' => 'int',
-                        'address' => [
-                            'country' => 'string',
-                            'city' => 'string',
-                            'location' => 'string'
-                        ],
+                        'country' => 'string',
+                        'city' => 'string',
+                        'location' => 'string',
                         'favorites' => 'string',
                         'type' => 'string',
                         'note' => 'string',
@@ -162,11 +173,9 @@ class CustomerController extends Controller
                         'age' => 'int',
                         'gender' => 'string',
                         'telephone' => 'int',
-                        'address' => [
-                            'country' => 'string',
-                            'city' => 'string',
-                            'location' => 'string'
-                        ],
+                        'country' => 'string',
+                        'city' => 'string',
+                        'location' => 'string',
                         'favorites' => 'string',
                         'type' => 'string',
                         'note' => 'string',
@@ -195,11 +204,9 @@ class CustomerController extends Controller
                     'age' => 'int',
                     'gender' => 'string',
                     'telephone' => 'int',
-                    'address' => [
-                        'country' => 'string',
-                        'city' => 'string',
-                        'location' => 'string'
-                    ],
+                    'country' => 'string',
+                    'city' => 'string',
+                    'location' => 'string',
                     'favorites' => 'string',
                     'type' => 'string',
                     'note' => 'string',
@@ -227,5 +234,20 @@ class CustomerController extends Controller
         ];
 
         return response()->json($response, 200);
+    }
+    public function test()
+    {
+        $customer = Customer::find('5bba4369e00832c1b4dc4a5b');
+
+        $json = [
+            'country' => 'Viet nam',
+            'city' => 'asdasdasd',
+            'location' => 'asdasd',
+        ];
+        $json_decode = json_decode(response()->json($json));
+        $addressJson = json_encode($customer->address, true);
+
+
+        return $json_decode;
     }
 }
