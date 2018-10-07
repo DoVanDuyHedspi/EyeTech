@@ -14,7 +14,8 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::all();
+        $limit = 10;
+        $events = Event::paginate($limit);
         foreach ($events as $event) {
             $event->view_event = [
                 'href' => 'api/v1/events/' . $event->_id,

@@ -11,7 +11,8 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customer::all();
+        $limit = 10;
+        $customers = Customer::paginate($limit);
         foreach ($customers as $customer) {
             $customer->view_customer = [
               'href' => 'api/v1/customers/' . $customer->_id,
@@ -211,7 +212,9 @@ class CustomerController extends Controller
 
     public function getDataForIdVector()
     {
-        $customers = Customer::all('_id', 'vector');
+        $limit = 10;
+        $projections = ['_id', 'vector'];
+        $customers = Customer::paginate($limit, $projections);
         foreach ($customers as $customer) {
             $customer->view_customer = [
                 'href' => 'api/v1/customers/' . $customer->_id,
