@@ -24,7 +24,15 @@ class CustomerFormRequest extends FormRequest
     public function rules()
     {
         return [
+            //
+        ];
+    }
+
+    public function setRules()
+    {
+        return [
             'vector' => 'required',
+            'name' => 'min:6',
         ];
     }
 }

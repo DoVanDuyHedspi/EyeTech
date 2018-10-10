@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use App\Http\Requests\ResultFaceDetectionFormRequest;
+use App\Http\Requests\EventFormRequest;
 use App\Event;
 use App\Http\Controllers\Controller;
+use Validator;
+use App\Http\Resources\Event as EventResource;
 
 class EventController extends Controller
 {
@@ -13,43 +14,48 @@ class EventController extends Controller
     {
         $limit = 10;
         $events = Event::paginate($limit);
-        foreach ($events as $event) {
-            $event->view_event = [
-                'href' => 'api/v1/events/' . $event->_id,
-                'method' => 'GET',
-            ];
-        }
-        $response = [
-            'message' => 'List Of All Events',
-            'data' => $events,
-        ];
 
-        return response()->json($response, 200);
+        return EventResource::collection($events)
+            ->additional([
+                'info' => [
+                    'message' => 'List Of All Events',
+                    'version' => '1.0'
+                ]
+            ])
+            ->response()
+            ->setStatusCode(200);
     }
 
-    public function store(ResultFaceDetectionFormRequest $request)
+    public function store(EventFormRequest $request)
     {
-        $event = Event::create($request->all());
+        $resultR = $this->handleRequest($request);
+        $data = $resultR[0];
+        $errors = $resultR[1];
+        if (!$data) {
+            $response = [
+                'message' => 'Error: Request Params Is Not Invalid',
+                'errors' => $errors,
+            ];
+            return response()->json($response, 400);
+        }
+
+        $event = Event::create($data);
         if (!$event) {
             $response = [
                 'message' => 'Error: Create Event Fail',
             ];
             return response()->json($response, 404);
         }
-        $event->view_event = [
-            'href' => 'api/v1/events/' . $event->_id,
-            'method' => 'GET',
-        ];
-        $event->destroy_event = [
-            'href' => 'api/v1/events/' . $event->_id,
-            'method' => 'DELETE',
-        ];
-        $response = [
-            'message' => 'Event Created Successfully',
-            'data' => $event,
-        ];
 
-        return response()->json($response, 201);
+        return (new EventResource($event))
+            ->additional([
+                'info' => [
+                    'message' => 'Event Created Successfully',
+                    'version' => '1.0'
+                ]
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show($id)
@@ -58,77 +64,60 @@ class EventController extends Controller
         if (!$event) {
             $response = [
                 'message' => 'Event Does Not Exist',
-                'create_event' => [
-                    'href' => 'api/v1/events',
-                    'method' => 'POST',
-                    'params' => [
-                        'customer_id' => 'string : required',
-                        'vector' => 'string : required',
-                        'time_in' => 'date : required',
-                        'camera_id' => 'string: required',
-                        'image_camera_url_array' => 'string : required',
-                        'image_detection_url_array' => 'string : required',
-                    ],
-                ],
             ];
 
             return response()->json($response, 404);
         }
-        $event->view_events = [
-            'href' => 'api/v1/events',
-            'method' => 'GET',
-        ];
-        $response = [
-            'message' => 'Event Information',
-            'data' => $event,
-        ];
 
-        return response()->json($response, 200);
+        return (new EventResource($event))
+            ->additional([
+                'info' => [
+                    'message' => 'Event Information',
+                    'version' => '1.0'
+                ]
+            ])
+            ->response()
+            ->setStatusCode(200);
     }
 
-    public function update(Request $request, $id)
+    public function update(EventFormRequest $request, $id)
     {
+        $resultR = $this->handleRequest($request);
+        $data = $resultR[0];
+        $errors = $resultR[1];
+        if (!$data) {
+            $response = [
+                'message' => 'Error: Request Params Is Not Invalid',
+                'errors' => $errors,
+            ];
+            return response()->json($response, 400);
+        }
+
         $event = Event::find($id);
         if (!$event) {
             $response = [
                 'message' => 'Event Does Not Exist',
-                'create_event' => [
-                    'href' => 'api/v1/events',
-                    'method' => 'POST',
-                    'params' => [
-                        'customer_id' => 'string : required',
-                        'vector' => 'string : required',
-                        'time_in' => 'date : required',
-                        'camera_id' => 'string: required',
-                        'image_camera_url_array' => 'string : required',
-                        'image_detection_url_array' => 'string : required',
-                    ],
-                ],
             ];
 
             return response()->json($response, 404);
         }
-        if (!$event->update($request->all())) {
+        if (!$event->update($data)) {
             $response = [
                 'message' => 'Error: Update Event Fail',
             ];
 
             return response()->json($response, 404);
         }
-        $event->view_event = [
-            'href' => 'api/v1/events/' . $event->_id,
-            'method' => 'GET',
-        ];
-        $event->update_event = [
-            'href' => 'api/v1/events/' . $event->_id,
-            'method' => 'PATCH',
-        ];
-        $response = [
-            'message' => 'Event Updated Successfully',
-            'data' => $event,
-        ];
 
-        return response()->json($response,200);
+        return (new EventResource($event))
+            ->additional([
+                'info' => [
+                    'message' => 'Event Updated Successfully',
+                    'version' => '1.0',
+                ]
+            ])
+            ->response()
+            ->setStatusCode(200);
     }
 
     public function destroy($id)
@@ -137,18 +126,6 @@ class EventController extends Controller
         if (!$event) {
             $response = [
                 'message' => 'Event Does Not Exist',
-                'create_event' => [
-                    'href' => 'api/v1/events',
-                    'method' => 'POST',
-                    'params' => [
-                        'customer_id' => 'string : required',
-                        'vector' => 'string : required',
-                        'time_in' => 'date : required',
-                        'camera_id' => 'string: required',
-                        'image_camera_url_array' => 'string : required',
-                        'image_detection_url_array' => 'string : required',
-                    ],
-                ],
             ];
 
             return response()->json($response, 404);
@@ -162,20 +139,18 @@ class EventController extends Controller
         }
         $response = [
             'message' => 'Event Deleted Successfully',
-            'create_event' => [
-                'href' => 'api/v1/events',
-                'method' => 'POST',
-                'params' => [
-                    'customer_id' => 'string : required',
-                    'vector' => 'string : required',
-                    'time_in' => 'date : required',
-                    'camera_id' => 'string: required',
-                    'image_camera_url_array' => 'string : required',
-                    'image_detection_url_array' => 'string : required',
-                ],
-            ],
         ];
 
         return response()->json($response, 200);
+    }
+
+    public function handleRequest(EventFormRequest $request)
+    {
+        $data = $request->all();
+        $validator = Validator::make($data, $request->setRules());
+        if ($validator->fails()) {
+            return [false, $validator->errors()];
+        }
+        return [$data, $validator->errors()];
     }
 }
