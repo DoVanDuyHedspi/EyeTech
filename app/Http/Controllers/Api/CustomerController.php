@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Customer;
 use App\Http\Requests\CustomerFormRequest;
-use App\Http\Requests\UpdateDataAfterChangeImageOrCustomerFormRequest;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class CustomerController extends Controller
 {
@@ -15,8 +14,8 @@ class CustomerController extends Controller
         $customers = Customer::paginate($limit);
         foreach ($customers as $customer) {
             $customer->view_customer = [
-              'href' => 'api/v1/customers/' . $customer->_id,
-              'method' => 'GET',
+                'href' => 'api/v1/customers/' . $customer->_id,
+                'method' => 'GET',
             ];
         }
         $response = [
@@ -234,20 +233,5 @@ class CustomerController extends Controller
         ];
 
         return response()->json($response, 200);
-    }
-    public function test()
-    {
-        $customer = Customer::find('5bba4369e00832c1b4dc4a5b');
-
-        $json = [
-            'country' => 'Viet nam',
-            'city' => 'asdasdasd',
-            'location' => 'asdasd',
-        ];
-        $json_decode = json_decode(response()->json($json));
-        $addressJson = json_encode($customer->address, true);
-
-
-        return $json_decode;
     }
 }
