@@ -24,9 +24,16 @@ class DetectionFormRequest extends FormRequest
     public function rules()
     {
         return [
+            //
+        ];
+    }
+
+    public function setRules()
+    {
+        return [
             'vector' => 'required',
             'customer_id' => 'required',
-            'time_in' => 'required',
+            'time_in' => 'required|date|date_format:Y-m-d H:i:s',
             'camera_id' => 'required',
             'image_camera_base64_array' => 'required',
         ];

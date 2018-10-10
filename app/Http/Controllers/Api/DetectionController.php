@@ -6,70 +6,64 @@ use App\Http\Requests\DetectionFormRequest;
 use App\Event;
 use App\Customer;
 use App\Http\Controllers\Controller;
+use Validator;
+use App\Http\Resources\Event as EventResource;
 
 class DetectionController extends Controller
 {
     public function store(DetectionFormRequest $request)
     {
-        $event = new Event();
-        $vector = $request->input('vector');
-        $customer_id = $request->input('customer_id');
-        $time_in = $request->input('time_in');
-        $camera_id = $request->input('camera_id');
-        $emotion = $request->input('emotion');
-        $image_camera_base64_array = $request->input('image_camera_base64_array');
+        $resultR = $this->handleRequest($request);
+        $data = $resultR[0];
+        $errors = $resultR[1];
+        if (!$data) {
+            $response = [
+                'message' => 'Error: Request Params Is Not Invalid',
+                'errors' => $errors,
+            ];
+            return response()->json($response, 400);
+        }
+
+        $vector = $data['vector'];
+        $customer_id = $data['customer_id'];
+        $image_camera_base64_array = $data['image_camera_base64_array'];
+        $resultDetect = $this->handleCustomerId($customer_id, $vector, $image_camera_base64_array);
 
         if ($customer_id == -1) {
-            $customer = new Customer();
-            $customer->vector = $vector;
-            if (!$customer->save()) {
+            if (!$resultDetect) {
                 $response = [
-                    'message' => 'Error During Create Customer',
+                    'message' => 'Error: Create Customer Fail',
                 ];
-                return response()->json($response, 404);
+                return response()->json($response, 400);
             }
-            $customer->image_url_array = $this->generateImagesUrl($image_camera_base64_array, $customer->_id);
-            $customer->save();
-
-            $event->customer_id = $customer->_id;
-            $event->image_detection_url_array = $customer->image_url_array;
-            $event->image_camera_url_array = $customer->image_url_array;
         } else {
-            $customer = Customer::find($customer_id);
-            if (!$customer) {
+            if (!$resultDetect) {
                 $response = [
-                    'message' => 'Customer Do Not Exist',
+                    'message' => 'Error: CustomerID ' . $customer_id . ' Do Not Exists',
                 ];
                 return response()->json($response, 404);
             }
-            $event->customer_id = $customer_id;
-            $event->image_detection_url_array = $customer->image_url_array;
-            $event->image_camera_url_array = $this->generateImagesUrl($image_camera_base64_array, $customer->_id);
         }
-        $event->vector = $vector;
-        $event->time_in = $time_in;
-        $event->camera_id = $camera_id;
-        $event->emotion = $emotion;
-        if(!$event->save()) {
+        $customer = $resultDetect[0];
+        $image_camera_url_array = $resultDetect[1];
+        $event = $this->createEvent($customer, $data, $image_camera_url_array);
+
+        if (!$event) {
             $response = [
                 'message' => 'Error: Create Event Fail',
             ];
-            return response()->json($response, 404);
+            return response()->json($response, 400);
         }
-        $event->view_event = [
-            'href' => 'api/v1/events/' . $event->_id,
-            'method' => 'GET',
-        ];
-        $event->view_customer = [
-            'href' => 'api/v1/customers/' . $event->customer_id,
-            'method' => 'GET',
-        ];
-        $response = [
-            'message' => 'Event Created Successfully',
-            'data' => $event,
-        ];
 
-        return response()->json($response, 201);
+        return (new EventResource($event))
+            ->additional([
+                'info' => [
+                    'message' => 'Detected! Event Created Successfully',
+                    'version' => '1.0'
+                ]
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function generateImagesUrl(array $image_camera_base64_array, $id)
@@ -88,5 +82,54 @@ class DetectionController extends Controller
         }
 
         return $image_url_array;
+    }
+
+    public function handleRequest(DetectionFormRequest $request)
+    {
+        $data = $request->all();
+        $validator = Validator::make($data, $request->setRules());
+        if ($validator->fails()) {
+            return [false, $validator->errors()];
+        }
+        return [$data, $validator->errors()];
+    }
+
+    public function handleCustomerId($id, $vector, $image_camera_base64_array)
+    {
+        if ($id == -1) {
+            $customer = new Customer();
+            $customer->vector = $vector;
+            if (!$customer->save()) {
+                return false;
+            }
+            $image_camera_url_array = $this->generateImagesUrl($image_camera_base64_array, $customer->_id);
+            $customer->image_url_array =  $image_camera_url_array;
+            $customer->save();
+
+            return [$customer, $image_camera_url_array];
+        } else {
+            $customer = Customer::find($id);
+            if (!$customer) {
+                return false;
+            }
+            $image_camera_url_array = $this->generateImagesUrl($image_camera_base64_array, $customer->_id);
+            return [$customer, $image_camera_url_array];
+        }
+    }
+
+    public function createEvent($customer, $data, $image_camera_url_array)
+    {
+        $event = new Event();
+        $event->customer_id = $customer->_id;
+        $event->vector = $data['vector'];
+        $event->time_in = $data['time_in'];
+        $event->camera_id = $data['camera_id'];
+        $event->image_camera_url_array = $image_camera_url_array;
+        $event->image_detection_url_array = $customer->image_url_array;
+        $event->save();
+        if (!$event) {
+            return false;
+        }
+        return $event;
     }
 }
