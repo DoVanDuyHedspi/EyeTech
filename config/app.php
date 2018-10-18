@@ -151,7 +151,7 @@ return [
          * Package Service Providers...
          */
         Jenssegers\Mongodb\MongodbQueueServiceProvider::class,
-
+        Laravel\Passport\PassportServiceProvider::class,
         /*
          * Application Service Providers...
          */

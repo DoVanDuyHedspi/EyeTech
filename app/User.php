@@ -2,28 +2,33 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    use HasApiTokens, Notifiable;
+    protected $connection = 'mysql';
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'email',
+        'password',
+        'telephone',
+        'active',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    public function store()
+    {
+        $this->belongsTo('App\Store', 'store_id');
+    }
+    public function address()
+    {
+        $this->hasOne('App\Address', 'owner_id');
+    }
+    public function cameras()
+    {
+        $this->hasMany('App\Camera', 'user_id');
+    }
 }

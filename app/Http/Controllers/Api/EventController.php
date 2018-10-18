@@ -5,15 +5,23 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\EventFormRequest;
 use App\Event;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Resources\Event as EventResource;
 
 class EventController extends Controller
 {
+    protected $limitPage;
+    public function __construct()
+    {
+        $this->limitPage = 10;
+    }
+
     public function index()
     {
-        $limit = 10;
-        $events = Event::paginate($limit);
+        $owner = Auth::user();
+        $events = Event::where('owner_id', '=', $owner->id)
+            ->paginate($this->limitPage);
 
         return EventResource::collection($events)
             ->additional([
@@ -28,6 +36,8 @@ class EventController extends Controller
 
     public function store(EventFormRequest $request)
     {
+        $owner = Auth::user();
+
         $resultR = $this->handleRequest($request);
         $data = $resultR[0];
         $errors = $resultR[1];
@@ -40,7 +50,8 @@ class EventController extends Controller
         }
 
         $event = Event::create($data);
-        if (!$event) {
+        $event->owner_id = $owner->id;
+        if (!$event->save()) {
             $response = [
                 'message' => 'Error: Create Event Fail',
             ];
@@ -60,8 +71,10 @@ class EventController extends Controller
 
     public function show($id)
     {
+        $owner = Auth::user();
+
         $event = Event::find($id);
-        if (!$event) {
+        if ((!$event) || ($event->owner_id != $owner->id)) {
             $response = [
                 'message' => 'Event Does Not Exist',
             ];
@@ -82,6 +95,8 @@ class EventController extends Controller
 
     public function update(EventFormRequest $request, $id)
     {
+        $owner = Auth::user();
+
         $resultR = $this->handleRequest($request);
         $data = $resultR[0];
         $errors = $resultR[1];
@@ -94,7 +109,7 @@ class EventController extends Controller
         }
 
         $event = Event::find($id);
-        if (!$event) {
+        if ((!$event) || ($event->owner_id != $owner->id)) {
             $response = [
                 'message' => 'Event Does Not Exist',
             ];
@@ -122,8 +137,10 @@ class EventController extends Controller
 
     public function destroy($id)
     {
+        $owner = Auth::user();
+
         $event = Event::find($id);
-        if (!$event) {
+        if ((!$event) || ($event->owner_id != $owner->id)) {
             $response = [
                 'message' => 'Event Does Not Exist',
             ];

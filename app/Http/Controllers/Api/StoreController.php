@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Store;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
+class StoreController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $store = new Store();
+        $store->name = $request->input('name');
+        $store->email = $request->input('email');
+        $store->telephone = $request->input('telephone');
+        $store->active = $request->input('active');
+        $store->password = bcrypt($request->input('password'));
+        $store->save();
+
+        return $store;
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}

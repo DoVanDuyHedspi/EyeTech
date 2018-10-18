@@ -7,14 +7,23 @@ use App\Http\Requests\CustomerFormRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Customer as CustomerResource;
 use App\Http\Resources\CustomerIdVector as CustomerIdVectorResource;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 
 class CustomerController extends Controller
 {
+    protected $limitPage;
+    public function __construct()
+    {
+        $this->limitPage = 10;
+    }
+
     public function index()
     {
-        $limit = 10;
-        $customers = Customer::paginate($limit);
+        $owner = Auth::user();
+        $customers = Customer::where('owner_id', '=', $owner->id)
+            ->paginate($this->limitPage);
+
         return (CustomerResource::collection($customers))
             ->additional([
                 'info' => [
@@ -28,6 +37,8 @@ class CustomerController extends Controller
 
     public function store(CustomerFormRequest $request)
     {
+        $owner = Auth::user();
+
         $resultR = $this->handleRequest($request);
         $data = $resultR[0];
         $errors = $resultR[1];
@@ -46,7 +57,7 @@ class CustomerController extends Controller
             ];
             return response()->json($response, 404);
         }
-
+        $customer->owner_id = $owner->id;
         $customer->address = [
             'country' => $request->input('country'),
             'city' => $request->input('city'),
@@ -63,13 +74,15 @@ class CustomerController extends Controller
             ])
             ->response()
             ->setStatusCode(201);
+
     }
 
     public function show($id)
     {
+        $owner = Auth::user();
         $customer = Customer::find($id);
 
-        if (!$customer) {
+        if ((!$customer) || ($customer->owner_id != $owner->id)) {
             $response = [
                 'message' => 'Customer Does Not Exist',
             ];
@@ -89,6 +102,8 @@ class CustomerController extends Controller
 
     public function update(CustomerFormRequest $request, $id)
     {
+        $owner = Auth::user();
+
         $resultR = $this->handleRequest($request);
         $data = $resultR[0];
         $errors = $resultR[1];
@@ -101,7 +116,7 @@ class CustomerController extends Controller
         }
 
         $customer = Customer::find($id);
-        if (!$customer) {
+        if ((!$customer) || ($customer->owner_id != $owner->id)) {
             $response = [
                 'message' => 'Customer Does Not Exist',
             ];
@@ -114,6 +129,11 @@ class CustomerController extends Controller
             ];
             return response()->json($response, 400);
         }
+        $customer->address = [
+            'country' => $request->input('country'),
+            'city' => $request->input('city'),
+            'location' => $request->input('location'),
+        ];
 
         return (new CustomerResource($customer))
             ->additional([
@@ -128,8 +148,10 @@ class CustomerController extends Controller
 
     public function destroy($id)
     {
+        $owner = Auth::user();
+
         $customer = Customer::find($id);
-        if (!$customer) {
+        if ((!$customer) || ($customer->owner_id != $owner->id)) {
             $response = [
                 'message' => 'Customer Does Not Exist',
             ];
@@ -152,9 +174,10 @@ class CustomerController extends Controller
 
     public function getDataForIdVector()
     {
-        $limit = 10;
+        $owner = Auth::user();
         $projections = ['_id', 'vector'];
-        $data = Customer::paginate($limit, $projections);
+        $data = Customer::where('owner_id', '=', $owner->id)
+            ->paginate($this->limitPage, $projections);
 
         return (CustomerIdVectorResource::collection($data))
             ->additional([

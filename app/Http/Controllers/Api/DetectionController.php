@@ -6,6 +6,7 @@ use App\Http\Requests\DetectionFormRequest;
 use App\Event;
 use App\Customer;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Resources\Event as EventResource;
 
@@ -13,6 +14,9 @@ class DetectionController extends Controller
 {
     public function store(DetectionFormRequest $request)
     {
+        //step1
+        $owner = Auth::user();
+
         $resultR = $this->handleRequest($request);
         $data = $resultR[0];
         $errors = $resultR[1];
@@ -24,10 +28,11 @@ class DetectionController extends Controller
             return response()->json($response, 400);
         }
 
+        //step2
         $vector = $data['vector'];
         $customer_id = $data['customer_id'];
         $image_camera_base64_array = $data['image_camera_base64_array'];
-        $resultDetect = $this->handleCustomerId($customer_id, $vector, $image_camera_base64_array);
+        $resultDetect = $this->handleCustomerId($owner->id, $customer_id, $vector, $image_camera_base64_array);
 
         if ($customer_id == -1) {
             if (!$resultDetect) {
@@ -46,7 +51,9 @@ class DetectionController extends Controller
         }
         $customer = $resultDetect[0];
         $image_camera_url_array = $resultDetect[1];
-        $event = $this->createEvent($customer, $data, $image_camera_url_array);
+
+        //step3
+        $event = $this->createEvent($owner->id, $customer, $data, $image_camera_url_array);
 
         if (!$event) {
             $response = [
@@ -94,11 +101,12 @@ class DetectionController extends Controller
         return [$data, $validator->errors()];
     }
 
-    public function handleCustomerId($id, $vector, $image_camera_base64_array)
+    public function handleCustomerId($owner_id, $id, $vector, $image_camera_base64_array)
     {
         if ($id == -1) {
             $customer = new Customer();
             $customer->vector = $vector;
+            $customer->owner_id = $owner_id;
             if (!$customer->save()) {
                 return false;
             }
@@ -117,10 +125,11 @@ class DetectionController extends Controller
         }
     }
 
-    public function createEvent($customer, $data, $image_camera_url_array)
+    public function createEvent($owner_id, $customer, $data, $image_camera_url_array)
     {
         $event = new Event();
         $event->customer_id = $customer->_id;
+        $event->owner_id = $owner_id;
         $event->vector = $data['vector'];
         $event->time_in = $data['time_in'];
         $event->camera_id = $data['camera_id'];
