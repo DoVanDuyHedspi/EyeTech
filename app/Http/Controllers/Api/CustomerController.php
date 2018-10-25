@@ -7,6 +7,9 @@ use App\Http\Requests\CustomerFormRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Customer as CustomerResource;
 use App\Http\Resources\CustomerIdVector as CustomerIdVectorResource;
+use App\Store;
+use App\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 
@@ -37,8 +40,6 @@ class CustomerController extends Controller
 
     public function store(CustomerFormRequest $request)
     {
-        $owner = Auth::user();
-
         $resultR = $this->handleRequest($request);
         $data = $resultR[0];
         $errors = $resultR[1];
@@ -57,7 +58,7 @@ class CustomerController extends Controller
             ];
             return response()->json($response, 404);
         }
-        $customer->owner_id = $owner->id;
+        $customer->store_id = $data['store_id'];
         $customer->address = [
             'country' => $request->input('country'),
             'city' => $request->input('city'),
@@ -172,19 +173,23 @@ class CustomerController extends Controller
         return response()->json($response, 200);
     }
 
-    public function getDataForIdVector()
+    public function getDataForIdVector(Request $request)
     {
-        $owner = Auth::user();
+        $store_id = $request->input('store_id');
+        $store = Store::findOrFail($store_id);
+        $cameras = $store->users()->get();
+
         $projections = ['_id', 'vector'];
-        $data = Customer::where('owner_id', '=', $owner->id)
+        $data = Customer::where('store_id', '=', $store_id)
             ->paginate($this->limitPage, $projections);
 
         return (CustomerIdVectorResource::collection($data))
             ->additional([
+                'cameras' => $cameras,
                 'info' => [
                     'message' => 'List Id And Vector Of All Customers',
                     'version' => '1.0'
-                ]
+                ],
             ])
             ->response()
             ->setStatusCode(200);

@@ -152,6 +152,8 @@ return [
          */
         Jenssegers\Mongodb\MongodbQueueServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
+
         /*
          * Application Service Providers...
          */

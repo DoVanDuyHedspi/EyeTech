@@ -2,14 +2,14 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, HasRoles, Notifiable;
     protected $connection = 'mysql';
     protected $fillable = [
         'name',
@@ -19,16 +19,17 @@ class User extends Authenticatable
         'active',
     ];
 
-    public function store()
+    protected $hidden = [
+        'password',
+    ];
+
+    public function stores()
     {
-        $this->belongsTo('App\Store', 'store_id');
+        return $this->belongsToMany('App\Store', 'store_has_branches', 'branch_id', 'store_id');
     }
+
     public function address()
     {
-        $this->hasOne('App\Address', 'owner_id');
-    }
-    public function cameras()
-    {
-        $this->hasMany('App\Camera', 'user_id');
+        return $this->hasOne('App\Address', 'owner_id');
     }
 }

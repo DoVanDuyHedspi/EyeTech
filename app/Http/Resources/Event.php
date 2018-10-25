@@ -16,7 +16,7 @@ class Event extends JsonResource
     {
         return [
             '_id' => $this->id,
-            'owner_id' => $this->owner_id,
+            'store_id' => $this->store_id,
             'customer_id' => $this->customer_id,
             'vector' => $this->vector,
             'time_in' => $this->time_in,
