@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Admin;
 
 use App\Store;
 use Illuminate\Http\Request;
@@ -19,6 +19,16 @@ class StoreController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -27,6 +37,7 @@ class StoreController extends Controller
     public function store(Request $request)
     {
         $store = new Store();
+
         $store->name = $request->input('name');
         $store->email = $request->input('email');
         $store->telephone = $request->input('telephone');
@@ -44,6 +55,17 @@ class StoreController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
     {
         //
     }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCamerasTable extends Migration
+class CreateStoresTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,13 @@ class CreateCamerasTable extends Migration
      */
     public function up()
     {
-        Schema::create('cameras', function (Blueprint $table) {
+        Schema::create('stores', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
             $table->string('name');
+            $table->string('email');
+            $table->string('password');
+            $table->string('telephone');
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }
@@ -28,6 +31,6 @@ class CreateCamerasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cameras');
+        Schema::dropIfExists('stores');
     }
 }

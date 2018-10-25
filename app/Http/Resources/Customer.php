@@ -16,7 +16,7 @@ class Customer extends JsonResource
     {
         return [
             '_id' => $this->_id,
-            'owner_id' => $this->owner_id,
+            'store_id' => $this->store_id,
             'image_url_array' => $this->image_url_array,
             'vector' => $this->vector,
             'name' => $this->name,

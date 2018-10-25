@@ -20,26 +20,36 @@ class UserController extends Controller
 
     public function index()
     {
-        //admin
+        $users = User::all();
+
+        return $users;
     }
 
     public function store(Request $request)
     {
         $user = new User();
         $user->name = $request->input('name');
-        $user->store_id = $request->input('store_id');
         $user->email = $request->input('email');
         $user->telephone = $request->input('telephone');
         $user->password = bcrypt($request->input('password'));
         $user->active = $request->input('active');
         $user->save();
+        $user->assignRole($request->input('roles'));
 
         return $user;
     }
 
     public function show($id)
     {
-        //
+        $user = User::findOrFail($id);
+        $userRole = $user->roles()->get();
+
+        $data = [
+            'user' => $user,
+            'roles' => $userRole,
+        ];
+
+        return $data;
     }
 
     public function update(Request $request, $id)
@@ -85,11 +95,5 @@ class UserController extends Controller
         ];
 
         return response()->json($response, 200);
-    }
-
-    public function detail()
-    {
-        $user = Auth::user();
-        return $user;
     }
 }
