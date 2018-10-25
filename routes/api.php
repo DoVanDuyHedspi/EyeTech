@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,12 +16,21 @@ use Illuminate\Http\Request;
 
 
 Route::group(['prefix' => 'v1'], function() {
-    Route::get('customers/vector-id', 'Api\CustomerController@getDataForIdVector');
-    Route::apiResource('customers', 'Api\CustomerController');
+    Route::post('users/register', 'Api\UserController@store');
+    Route::post('users/login', 'Api\UserController@login');
 
-    Route::apiResource('events', 'Api\EventController');
+    Route::group(['middleware' => 'auth:api'], function () {
+        Route::get('users/logout', 'Api\UserController@logout');
 
-    Route::apiResource('detections', 'Api\DetectionController')->only([
-        'store'
-    ]);
+        Route::group(['prefix' => 'users', 'middleware' => 'role:detection'], function () {
+            Route::post('customers/vector-id', 'Api\CustomerController@getDataForIdVector');
+            Route::apiResource('detections', 'Api\DetectionController')->only([
+                'store'
+            ]);
+        });
+
+        Route::group(['prefix' => 'admin', 'middleware' => 'role:api-admin'], function () {
+            Route::apiResource('stores', 'Api\Admin\StoreController');
+        });
+    });
 });

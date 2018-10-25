@@ -16,6 +16,7 @@ class CustomerIdVector extends JsonResource
     {
         return [
             '_id' => $this->_id,
+            'owner_id' => $this->owner_id,
             'vector' => $this->vector,
         ];
     }

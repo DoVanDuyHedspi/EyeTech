@@ -32,9 +32,10 @@ class EventFormRequest extends FormRequest
     {
         return [
             'customer_id' => 'required',
+            'store_id' => 'required',
+            'camera_id' => 'required',
             'vector' => 'required',
             'time_in' => 'required|date|date_format:Y-m-d H:i:s',
-            'camera_id' => 'required',
             'image_camera_url_array' => 'required',
             'image_detection_url_array' => 'required',
         ];

@@ -11,8 +11,16 @@ use App\Http\Resources\Event as EventResource;
 
 class DetectionController extends Controller
 {
+    /**
+     * Handle detect
+     * Step1: handle request
+     * Step2: handle customer_id, store image from image_camera_base64 and get url
+     * Step3: Create new event and return
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(DetectionFormRequest $request)
     {
+        //step1
         $resultR = $this->handleRequest($request);
         $data = $resultR[0];
         $errors = $resultR[1];
@@ -24,10 +32,9 @@ class DetectionController extends Controller
             return response()->json($response, 400);
         }
 
-        $vector = $data['vector'];
+        //step2
         $customer_id = $data['customer_id'];
-        $image_camera_base64_array = $data['image_camera_base64_array'];
-        $resultDetect = $this->handleCustomerId($customer_id, $vector, $image_camera_base64_array);
+        $resultDetect = $this->handleCustomerId($customer_id, $data);
 
         if ($customer_id == -1) {
             if (!$resultDetect) {
@@ -46,6 +53,8 @@ class DetectionController extends Controller
         }
         $customer = $resultDetect[0];
         $image_camera_url_array = $resultDetect[1];
+
+        //step3
         $event = $this->createEvent($customer, $data, $image_camera_url_array);
 
         if (!$event) {
@@ -94,11 +103,15 @@ class DetectionController extends Controller
         return [$data, $validator->errors()];
     }
 
-    public function handleCustomerId($id, $vector, $image_camera_base64_array)
+    public function handleCustomerId($id, $data)
     {
+        $store_id = $data['store_id'];
+        $image_camera_base64_array = $data['image_camera_base64_array'];
+
         if ($id == -1) {
             $customer = new Customer();
-            $customer->vector = $vector;
+            $customer->vector = $data['vector'];
+            $customer->store_id = $store_id;
             if (!$customer->save()) {
                 return false;
             }
@@ -121,7 +134,8 @@ class DetectionController extends Controller
     {
         $event = new Event();
         $event->customer_id = $customer->_id;
-        $event->vector = $data['vector'];
+        $event->vector = $customer->vector;
+        $event->store_id = $data['store_id'];
         $event->time_in = $data['time_in'];
         $event->camera_id = $data['camera_id'];
         $event->image_camera_url_array = $image_camera_url_array;
