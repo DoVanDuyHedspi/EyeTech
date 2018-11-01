@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Customer;
 use App\Http\Requests\CustomerFormRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\VectorIdFormRequest;
 use App\Http\Resources\Customer as CustomerResource;
 use App\Http\Resources\CustomerIdVector as CustomerIdVectorResource;
 use App\Store;
-use App\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 
@@ -173,11 +172,28 @@ class CustomerController extends Controller
         return response()->json($response, 200);
     }
 
-    public function getDataForIdVector(Request $request)
+    public function getDataForIdVector(VectorIdFormRequest $request)
     {
-        $store_id = $request->input('store_id');
+        $data = $request->all();
+        $validator = Validator::make($data, $request->setRules());
+
+        if ($validator->fails()) {
+            $response = [
+                'message' => 'Error: Request Params Is Not Invalid',
+                'errors' => $validator->errors(),
+            ];
+
+            return response()->json($response, 400);
+        }
+
+        $store_id = $data['store_id'];
         $store = Store::findOrFail($store_id);
         $cameras = $store->users()->get();
+
+        $cameras_id = [];
+        foreach ($cameras as $camera) {
+            array_push($cameras_id, $camera->id);
+        }
 
         $projections = ['_id', 'vector'];
         $data = Customer::where('store_id', '=', $store_id)
@@ -185,7 +201,7 @@ class CustomerController extends Controller
 
         return (CustomerIdVectorResource::collection($data))
             ->additional([
-                'cameras' => $cameras,
+                'cameras' => $cameras_id,
                 'info' => [
                     'message' => 'List Id And Vector Of All Customers',
                     'version' => '1.0'
