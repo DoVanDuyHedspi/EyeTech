@@ -23,6 +23,7 @@ Route::group(['prefix' => 'v1'], function() {
         Route::get('users/logout', 'Api\UserController@logout');
 
         Route::group(['prefix' => 'users', 'middleware' => 'role:detection'], function () {
+            Route::get('stores-id', 'Api\Admin\StoreController@getStoreID');
             Route::post('customers/vector-id', 'Api\CustomerController@getDataForIdVector');
             Route::apiResource('detections', 'Api\DetectionController')->only([
                 'store'

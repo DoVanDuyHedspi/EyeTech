@@ -74,7 +74,13 @@ class UserController extends Controller
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;
         $token->expires_at = now()->addDays($this->tokensExpireIn);
-        return response()->json($tokenResult, 200);
+
+        $data = [
+            "camera_id" => $user->id,
+            "access_token" => $tokenResult->accessToken,
+            "expires_at" => $token->expires_at->format('Y/m/d H:i:s')
+        ];
+        return response()->json($data, 200);
     }
 
     public function logout(Request $request)
