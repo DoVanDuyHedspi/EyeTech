@@ -5,27 +5,24 @@ namespace App;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+
+class Store extends Authenticatable
 {
-    use HasApiTokens, HasRoles, Notifiable;
+    use HasApiTokens, Notifiable;
     protected $connection = 'mysql';
     protected $fillable = [
         'name',
         'email',
         'password',
         'telephone',
-        'active',
+        'active'
     ];
+    protected $hidden = ['password'];
 
-    protected $hidden = [
-        'password',
-    ];
-
-    public function stores()
+    public function users()
     {
-        return $this->belongsToMany('App\Store', 'store_has_branches', 'branch_id', 'store_id');
+        return $this->belongsToMany('App\User', 'store_has_branches', 'store_id', 'branch_id');
     }
 
     public function address()
