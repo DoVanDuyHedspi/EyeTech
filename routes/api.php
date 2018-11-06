@@ -20,10 +20,11 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('users/login', 'Api\UserController@login');
 
     Route::group(['middleware' => 'auth:api'], function () {
+
         Route::get('users/logout', 'Api\UserController@logout');
 
         Route::group(['prefix' => 'users', 'middleware' => 'role:detection'], function () {
-            Route::get('stores-id', 'Api\Admin\StoreController@getStoreID');
+            Route::get('list-stores-id', 'Api\Admin\StoreController@getStoreID');
             Route::post('customers/vector-id', 'Api\CustomerController@getDataForIdVector');
             Route::apiResource('detections', 'Api\DetectionController')->only([
                 'store'
@@ -33,5 +34,9 @@ Route::group(['prefix' => 'v1'], function() {
         Route::group(['prefix' => 'admin', 'middleware' => 'role:api-admin'], function () {
             Route::apiResource('stores', 'Api\Admin\StoreController');
         });
+
+        Route::apiResource('users', 'Api\UserController')->only([
+            'show'
+        ]);
     });
 });
