@@ -9,7 +9,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 class AppServiceProvider extends ServiceProvider
 {
     protected $policies = [
-        'App\Model' => 'App\Policies\ModelPolicy',
+        'App\User' => 'App\Policies\ModelPolicy',
     ];
     /**
      * Bootstrap any application services.

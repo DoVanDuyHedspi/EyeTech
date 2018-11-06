@@ -20,16 +20,7 @@ class StoreController extends Controller
 
     public function store(Request $request)
     {
-        $store = new Store();
-
-        $store->name = $request->input('name');
-        $store->email = $request->input('email');
-        $store->telephone = $request->input('telephone');
-        $store->active = $request->input('active');
-        $store->password = bcrypt($request->input('password'));
-        $store->save();
-
-        return $store;
+        //
     }
 
     public function show($id)
