@@ -5,20 +5,20 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-
-class Store extends Authenticatable
+class Branch extends Authenticatable
 {
     use Notifiable;
     protected $connection = 'mysql';
     protected $fillable = [
         'user_id',
+        'store_id',
         'name',
         'email',
         'password',
-        'telephone'
+        'telephone',
     ];
     protected $hidden = [
-        'password'
+        'password',
     ];
 
     public function user()
@@ -26,9 +26,9 @@ class Store extends Authenticatable
         return $this->belongsTo('App\User', 'user_id');
     }
 
-    public function branches()
+    public function store()
     {
-        return $this->hasMany('App\Branch', 'store_id');
+        return $this->belongsTo('App\Store', 'store_id');
     }
 
     public function address()

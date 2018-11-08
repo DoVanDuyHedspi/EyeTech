@@ -116,7 +116,7 @@ class CustomerController extends Controller
         }
 
         $customer = Customer::find($id);
-        if ((!$customer) || ($customer->owner_id != $owner->id)) {
+        if (!$customer) {
             $response = [
                 'message' => 'Customer Does Not Exist',
             ];
@@ -151,7 +151,7 @@ class CustomerController extends Controller
         $owner = Auth::user();
 
         $customer = Customer::find($id);
-        if ((!$customer) || ($customer->owner_id != $owner->id)) {
+        if (!$customer) {
             $response = [
                 'message' => 'Customer Does Not Exist',
             ];
@@ -186,22 +186,19 @@ class CustomerController extends Controller
             return response()->json($response, 400);
         }
 
-        $store_id = $data['store_id'];
-        $store = Store::findOrFail($store_id);
-        $cameras = $store->users()->get();
-
-        $cameras_id = [];
-        foreach ($cameras as $camera) {
-            array_push($cameras_id, $camera->id);
-        }
+//        $store = Store::findOrFail($data['store_id']);
+//        $branches = $store->branches;
+//        $branches_id = [];
+//        foreach ($branches as $branch) {
+//            array_push($branches_id, $branch->id);
+//        }
 
         $projections = ['_id', 'vector'];
-        $data = Customer::where('store_id', '=', $store_id)
+        $data = Customer::where('store_id', '=', $data['store_id'])
             ->paginate($this->limitPage, $projections);
 
         return (CustomerIdVectorResource::collection($data))
             ->additional([
-                'cameras' => $cameras_id,
                 'info' => [
                     'message' => 'List Id And Vector Of All Customers',
                     'version' => '1.0'
