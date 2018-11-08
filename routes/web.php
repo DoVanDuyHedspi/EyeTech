@@ -15,10 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-//Route::get('/customers/create', 'TestController@create');
-//Route::get('/customers', 'TestController@index');
+Auth::routes();
 
-Route::resource('test', 'TestController');
-
-Route::get('base64-encode', 'TestController@test_base64');
-Route::get('base64-decode', 'TestController@test_decode');
+Route::get('/home', 'HomeController@index')->name('home');
