@@ -30,7 +30,7 @@
         methods: {
             login() {
                 var app = this;
-                axios.post('http://202.191.56.249/eyetech/api/v1/users/login', {
+                axios.post('http://localhost/eyetech/api/v1/users/login', {
                     email: this.email,
                     password: this.password,
                 })

@@ -60,7 +60,7 @@
         methods: {
             register() {
                 var app = this;
-                axios.post('http://202.191.56.249/eyetech/api/v1/users/register', {
+                axios.post('http://localhost/eyetech/api/v1/users/register', {
                     name: this.name,
                     email: this.email,
                     telephone: this.telephone,
@@ -68,9 +68,11 @@
                     type: this.type
                 })
                     .then(function (response) {
+                        console.log(response);
                         app.$router.push({path: '/home'});
                     })
                     .catch(function (error) {
+                        console.log(error);
                         alert("fail");
                     })
             }
