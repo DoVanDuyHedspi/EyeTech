@@ -18,13 +18,13 @@ use Spatie\Permission\Models\Role;
 Route::group(['prefix' => 'v1'], function() {
     Route::post('users/register', 'Api\UserController@store');
     Route::post('users/login', 'Api\UserController@login');
+    Route::get('list-stores-id', 'Api\Admin\StoreController@getStoreID');
 
     Route::group(['middleware' => 'auth:api'], function () {
 
         Route::get('users/logout', 'Api\UserController@logout');
 
         Route::group(['prefix' => 'users', 'middleware' => 'role:detection'], function () {
-            Route::get('list-stores-id', 'Api\Admin\StoreController@getStoreID');
             Route::post('customers/vector-id', 'Api\CustomerController@getDataForIdVector');
             Route::apiResource('detections', 'Api\DetectionController')->only([
                 'store'
