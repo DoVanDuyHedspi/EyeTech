@@ -51733,7 +51733,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         login: function login() {
             var app = this;
-            axios.post('http://localhost:8888/eyetech/api/v1/users/login', {
+            axios.post('http://localhost/eyetech/api/v1/users/login', {
                 email: this.email,
                 password: this.password
             }).then(function (response) {
@@ -51940,7 +51940,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -52014,15 +52014,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         register: function register() {
             var app = this;
-            axios.post('http://localhost:8888/eyetech/api/v1/users/register', {
+            axios.post('http://localhost/eyetech/api/v1/users/register', {
                 name: this.name,
                 email: this.email,
                 telephone: this.telephone,
                 password: this.password,
                 type: this.type
             }).then(function (response) {
+                console.log(response);
                 app.$router.push({ path: '/home' });
             }).catch(function (error) {
+                console.log(error);
                 alert("fail");
             });
         }
