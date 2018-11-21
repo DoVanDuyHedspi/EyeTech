@@ -15,7 +15,7 @@ use Spatie\Permission\Models\Role;
 */
 
 
-Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function() {
+Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
     Route::post('users/register', 'Api\UserController@store');
     Route::post('users/login', 'Api\UserController@login');
     Route::get('list-stores-id', 'Api\Admin\StoreController@getStoreID');
