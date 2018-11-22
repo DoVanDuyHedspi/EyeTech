@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Customer;
 use App\Http\Requests\EventFormRequest;
 use App\Event;
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Resources\Event as EventResource;
@@ -169,5 +171,29 @@ class EventController extends Controller
             return [false, $validator->errors()];
         }
         return [$data, $validator->errors()];
+    }
+
+    public function formatEventForClient()
+    {
+        $events = Event::all();
+        $data = [];
+        foreach ($events as $event)
+        {
+            $customer = Customer::find($event->customer_id);
+
+            $eventFormat = [
+                'name' => $customer->name,
+                'type' => $customer->type,
+                'time_in' => $event->time_in,
+                'image_camera_url_array' => $event->image_camera_url_array,
+                'image_detection_url_array' => $event->image_camera_url_array,
+            ];
+            array_push($data, $eventFormat);
+        }
+        $response = [
+            'message' => 'List Event Formatted',
+            'data' => $data
+        ];
+        return response()->json($response, 200);
     }
 }

@@ -20,6 +20,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
     Route::post('users/login', 'Api\UserController@login');
     Route::get('list-stores-id', 'Api\Admin\StoreController@getStoreID');
     Route::post('list-branches-id', 'Api\Admin\BranchController@getBranchID');
+    Route::get('event-format', 'Api\EventController@formatEventForClient');
 
     Route::group(['middleware' => 'auth:api'], function () {
 
