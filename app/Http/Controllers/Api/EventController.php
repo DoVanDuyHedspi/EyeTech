@@ -176,7 +176,7 @@ class EventController extends Controller
 
     public function formatEventForClient(Request $request)
     {
-        $events = Event::where('store_id', '=', $request->input('store_id'))->get();
+        $events = Event::where('camera_id', '=', $request->input('camera_id'))->get();
         $data = [];
         foreach ($events as $event)
         {
