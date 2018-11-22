@@ -31,7 +31,6 @@ class DetectionFormRequest extends FormRequest
     public function setRules()
     {
         return [
-//            'vector' => 'required',
             'store_id' => 'required',
             'customer_id' => 'required',
             'time_in' => 'required|date|date_format:Y-m-d H:i:s',
