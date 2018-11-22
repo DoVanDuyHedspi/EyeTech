@@ -7,6 +7,7 @@ use App\Http\Requests\EventFormRequest;
 use App\Event;
 use App\Http\Controllers\Controller;
 use App\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Resources\Event as EventResource;
@@ -173,9 +174,9 @@ class EventController extends Controller
         return [$data, $validator->errors()];
     }
 
-    public function formatEventForClient()
+    public function formatEventForClient(Request $request)
     {
-        $events = Event::all();
+        $events = Event::where('store_id', '=', $request->input('store_id'))->get();
         $data = [];
         foreach ($events as $event)
         {
