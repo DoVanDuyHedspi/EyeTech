@@ -187,8 +187,6 @@ class EventController extends Controller
         {
             $timeInFormat = $event->time_in;
             $customer = Customer::find($event->customer_id);
-            $type = $customer->type;
-            $favorites = $customer->favorites;
 
             $slice_image_camera = array_slice($event->image_camera_url_array, 0, $numberImageCamera);
             $slice_image_detection = array_slice($event->image_detection_url_array, 0, $numberImageDetection);
@@ -214,8 +212,19 @@ class EventController extends Controller
             } else {
                 $name = $customer->name;
             }
-            if ($type === null) $type = $dataEmptyString;
-            if ($favorites === null) $favorites = $dataEmptyString;
+
+            if ($customer->type === null) {
+                $type = $dataEmptyString;
+            } else {
+                $type = $customer->type;
+            }
+
+            if ($customer->favorites === null) {
+                $favorites = $dataEmptyString;
+            } else {
+                $favorites = $customer->favorites;
+            }
+
             if ($slice_image_camera === null) $slice_image_camera = $image_null_path;
             if ($slice_image_detection === null) $slice_image_detection = $image_null_path;
             if ($timeInHandle === null) $timeInHandle = $dataEmptyString;
