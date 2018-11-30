@@ -180,7 +180,7 @@ class EventController extends Controller
         $data = [];
         $numberImageCamera = 2;
         $numberImageDetection = 2;
-        $image_null_url = 'public/images/cu/null.png';
+        $image_null_url = 'images/cu/null.png';
         $dataEmptyString = 'Data is empty';
         $urlHeader = 'http://202.191.56.249/';
         $pathHeader = '/var/www/html/';
