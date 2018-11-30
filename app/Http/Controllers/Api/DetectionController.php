@@ -80,18 +80,18 @@ class DetectionController extends Controller
         $image_url_array = [];
         foreach ($image_camera_base64_array as $image_base64) {
             $image_base64_decode = base64_decode($image_base64);
-            $pathHeader = 'http://202.191.56.249/';
-            $pathRoot = '/var/www/html/';
+            $urlHeader = 'http://202.191.56.249/';
+            $pathHeader = '/var/www/html/';
             $pathBody = 'images/cu/' . $id . '/';
 
-            $path = $pathRoot . $pathBody;
+            $path = $pathHeader . $pathBody;
             if (!file_exists($path)) {
                 mkdir($path, 0777, true);
             }
             $imagePathBody = str_random(10) . '.jpg';
             $imagePath = $path . $imagePathBody;
             if (file_put_contents($imagePath, $image_base64_decode)) {
-                $image_url = $pathHeader . $pathBody . $imagePathBody;
+                $image_url = $urlHeader . $pathBody . $imagePathBody;
                 array_push($image_url_array, $image_url);
             }
         }
