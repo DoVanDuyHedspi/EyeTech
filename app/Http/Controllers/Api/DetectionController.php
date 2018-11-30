@@ -83,7 +83,7 @@ class DetectionController extends Controller
             $pathHeader = 'http://202.191.56.249/';
 
 //            $path = '/Applications/MAMP/htdocs/images/cu/' . $id . '/';
-            $path = $pathHeader . 'images/cu/' . $id . '/';
+            $path ='./images/cu/' . $id . '/';
             if (!file_exists($path)) {
                 mkdir($path, 0777, true);
             }
