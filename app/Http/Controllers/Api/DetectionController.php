@@ -85,7 +85,7 @@ class DetectionController extends Controller
                 mkdir($path, 0777, true);
             }
             $image_url = $path . str_random(10) . '.jpg';
-            if(file_put_contents($image_url, $image_base64_decode)) {
+            if (file_put_contents($image_url, $image_base64_decode)) {
                 array_push($image_url_array, $image_url);
             }
         }
