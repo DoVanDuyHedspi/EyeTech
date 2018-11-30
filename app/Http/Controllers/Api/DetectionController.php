@@ -119,6 +119,14 @@ class DetectionController extends Controller
             }
             $image_camera_url_array = $this->generateImagesUrl($image_camera_base64_array, $customer->_id);
             $customer->image_url_array =  $image_camera_url_array;
+            $customer->name = '';
+            $customer->age = '';
+            $customer->gender = '';
+            $customer->telephone = '';
+            $customer->type = '';
+            $customer->address = '';
+            $customer->favorites = '';
+            $customer->note = '';
             $customer->save();
 
             return [$customer, $image_camera_url_array];
