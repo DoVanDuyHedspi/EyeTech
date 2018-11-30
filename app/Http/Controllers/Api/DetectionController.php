@@ -83,13 +83,15 @@ class DetectionController extends Controller
             $pathHeader = 'http://202.191.56.249/';
 
 //            $path = '/Applications/MAMP/htdocs/images/cu/' . $id . '/';
-            $path ='./images/cu/' . $id . '/';
+            $path ='/var/www/html/images/cu/' . $id . '/';
             if (!file_exists($path)) {
                 mkdir($path, 0777, true);
             }
-            $image_url = $path . str_random(10) . '.jpg';
+            $image_url_body = str_random(10) . '.jpg';
+            $image_url = $path . $image_url_body;
             if (file_put_contents($image_url, $image_base64_decode)) {
-                array_push($image_url_array, $image_url);
+                $fix_image_url = $pathHeader . 'images/cu/' . $image_url_body;
+                array_push($image_url_array, $fix_image_url);
             }
         }
 
