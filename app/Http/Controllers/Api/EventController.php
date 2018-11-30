@@ -187,9 +187,9 @@ class EventController extends Controller
         {
             $timeInFormat = $event->time_in;
             $customer = Customer::find($event->customer_id);
-            $name = $customer['name'];
-            $type = $customer['type'];
-            $favorites = $customer['favorites'];
+            $name = $customer->name;
+            $type = $customer->type;
+            $favorites = $customer->favorites;
 
             $slice_image_camera = array_slice($event->image_camera_url_array, 0, $numberImageCamera);
             $slice_image_detection = array_slice($event->image_detection_url_array, 0, $numberImageDetection);
