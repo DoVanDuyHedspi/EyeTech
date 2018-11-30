@@ -187,7 +187,6 @@ class EventController extends Controller
         {
             $timeInFormat = $event->time_in;
             $customer = Customer::find($event->customer_id);
-            $name = $customer->name;
             $type = $customer->type;
             $favorites = $customer->favorites;
 
@@ -210,7 +209,11 @@ class EventController extends Controller
 
             $timeInHandle = $this->handleTimeIn($timeInFormat);
 
-            if ($name === null) $name = $dataEmptyString;
+            if ($customer->name === null) {
+                $name = $dataEmptyString;
+            } else {
+                $name = $customer->name;
+            }
             if ($type === null) $type = $dataEmptyString;
             if ($favorites === null) $favorites = $dataEmptyString;
             if ($slice_image_camera === null) $slice_image_camera = $image_null_path;
