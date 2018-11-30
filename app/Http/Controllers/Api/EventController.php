@@ -180,8 +180,8 @@ class EventController extends Controller
         $data = [];
         $numberImageCamera = 2;
         $numberImageDetection = 2;
-        $image_null_path = 'public/images/cu/null.png';
-        $dataEmptyString = 'data is empty';
+        $image_null_url = 'public/images/cu/null.png';
+        $dataEmptyString = 'Data is empty';
         $urlHeader = 'http://202.191.56.249/';
         $pathHeader = '/var/www/html/';
 
@@ -201,7 +201,7 @@ class EventController extends Controller
                 $imageUrlBody = str_replace( $urlHeader, '', $imageUrl );
                 $pathImg = $pathHeader . $imageUrlBody;
                 if (!file_exists($pathImg)) {
-                    $slice_image_camera[$i] = $image_null_path;
+                    $slice_image_camera[$i] = $image_null_url;
                 }
             }
 
@@ -210,14 +210,14 @@ class EventController extends Controller
                 $imageUrlBody = str_replace( $urlHeader, '', $imageUrl );
                 $pathImg = $pathHeader . $imageUrlBody;
                 if (!file_exists($pathImg)) {
-                    $slice_image_detection[$i] = $image_null_path;
+                    $slice_image_detection[$i] = $image_null_url;
                 }
             }
 
             $timeInHandle = $this->handleTimeIn($timeInFormat);
 
-            if ($slice_image_camera === null) $slice_image_camera = $image_null_path;
-            if ($slice_image_detection === null) $slice_image_detection = $image_null_path;
+            if ($slice_image_camera === null) $slice_image_camera = $image_null_url;
+            if ($slice_image_detection === null) $slice_image_detection = $image_null_url;
             if ($timeInHandle === null) $timeInHandle = $dataEmptyString;
 
             $eventFormat = [
