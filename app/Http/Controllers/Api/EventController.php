@@ -180,8 +180,10 @@ class EventController extends Controller
         $data = [];
         $numberImageCamera = 2;
         $numberImageDetection = 2;
-        $image_null_path = 'images/cu/null.png';
+        $image_null_path = 'public/images/cu/null.png';
         $dataEmptyString = 'data is empty';
+        $urlHeader = 'http://202.191.56.249/';
+        $pathHeader = '/var/www/html/';
 
         foreach ($events as $event)
         {
@@ -195,14 +197,18 @@ class EventController extends Controller
             $slice_image_detection = array_slice($event->image_detection_url_array, 0, $numberImageDetection);
 
             for ($i=0; $i<$numberImageCamera; $i++) {
-                $pathImg = $slice_image_camera[$i];
+                $imageUrl = $slice_image_camera[$i];
+                $imageUrlBody = str_replace( $urlHeader, '', $imageUrl );
+                $pathImg = $pathHeader . $imageUrlBody;
                 if (!file_exists($pathImg)) {
                     $slice_image_camera[$i] = $image_null_path;
                 }
             }
 
             for ($i=0; $i<$numberImageDetection; $i++) {
-                $pathImg = $slice_image_detection[$i];
+                $imageUrl = $slice_image_detection[$i];
+                $imageUrlBody = str_replace( $urlHeader, '', $imageUrl );
+                $pathImg = $pathHeader . $imageUrlBody;
                 if (!file_exists($pathImg)) {
                     $slice_image_detection[$i] = $image_null_path;
                 }
