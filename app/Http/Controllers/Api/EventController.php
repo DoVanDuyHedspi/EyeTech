@@ -181,7 +181,7 @@ class EventController extends Controller
         $numberImageCamera = 2;
         $numberImageDetection = 2;
         $image_null_path = 'images/cu/null.png';
-        $dataEmptyString = 'Data is empty';
+        $dataEmptyString = 'data is empty';
 
         foreach ($events as $event)
         {
