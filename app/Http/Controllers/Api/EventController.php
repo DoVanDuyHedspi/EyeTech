@@ -210,9 +210,6 @@ class EventController extends Controller
 
             $timeInHandle = $this->handleTimeIn($timeInFormat);
 
-            if ($name === null) $name = $dataEmptyString;
-            if ($type === null) $type = $dataEmptyString;
-            if ($favorites === null) $favorites = $dataEmptyString;
             if ($slice_image_camera === null) $slice_image_camera = $image_null_path;
             if ($slice_image_detection === null) $slice_image_detection = $image_null_path;
             if ($timeInHandle === null) $timeInHandle = $dataEmptyString;

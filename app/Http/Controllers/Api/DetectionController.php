@@ -80,7 +80,9 @@ class DetectionController extends Controller
         $image_url_array = [];
         foreach ($image_camera_base64_array as $image_base64) {
             $image_base64_decode = base64_decode($image_base64);
-            $path = 'images/cu/' . $id . '/';
+
+//            $path = '/Applications/MAMP/htdocs/images/cu/' . $id . '/';
+            $path = '/var/www/html/images/cu/' . $id . '/';
             if (!file_exists($path)) {
                 mkdir($path, 0777, true);
             }
