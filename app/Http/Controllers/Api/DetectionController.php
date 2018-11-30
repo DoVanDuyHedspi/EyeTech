@@ -82,7 +82,7 @@ class DetectionController extends Controller
             $image_base64_decode = base64_decode($image_base64);
 
 //            $path = '/Applications/MAMP/htdocs/images/cu/' . $id . '/';
-            $path = '/var/www/html/images/cu/' . $id . '/';
+            $path = '/images/cu/' . $id . '/';
             if (!file_exists($path)) {
                 mkdir($path, 0777, true);
             }
