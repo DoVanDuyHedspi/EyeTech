@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DetectionFormRequest extends FormRequest
+class ListBranchFormRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,18 +24,7 @@ class DetectionFormRequest extends FormRequest
     public function rules()
     {
         return [
-            //
-        ];
-    }
-
-    public function setRules()
-    {
-        return [
             'store_id' => 'required',
-            'customer_id' => 'required',
-            'time_in' => 'required|date|date_format:Y-m-d H:i:s',
-            'camera_id' => 'required',
-            'image_camera_base64_array' => 'required',
         ];
     }
 }

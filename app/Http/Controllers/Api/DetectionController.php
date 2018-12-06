@@ -80,12 +80,18 @@ class DetectionController extends Controller
         $image_url_array = [];
         foreach ($image_camera_base64_array as $image_base64) {
             $image_base64_decode = base64_decode($image_base64);
-            $path = 'images/cu/' . $id . '/';
+            $urlHeader = 'http://202.191.56.249/';
+            $pathHeader = '/var/www/html/';
+            $pathBody = 'images/cu/' . $id . '/';
+
+            $path = $pathHeader . $pathBody;
             if (!file_exists($path)) {
                 mkdir($path, 0777, true);
             }
-            $image_url = $path . str_random(10) . '.jpg';
-            if(file_put_contents($image_url, $image_base64_decode)) {
+            $imagePathBody = str_random(10) . '.jpg';
+            $imagePath = $path . $imagePathBody;
+            if (file_put_contents($imagePath, $image_base64_decode)) {
+                $image_url = $urlHeader . $pathBody . $imagePathBody;
                 array_push($image_url_array, $image_url);
             }
         }
@@ -117,6 +123,14 @@ class DetectionController extends Controller
             }
             $image_camera_url_array = $this->generateImagesUrl($image_camera_base64_array, $customer->_id);
             $customer->image_url_array =  $image_camera_url_array;
+            $customer->name = '';
+            $customer->age = '';
+            $customer->gender = '';
+            $customer->telephone = '';
+            $customer->type = '';
+            $customer->address = '';
+            $customer->favorites = '';
+            $customer->note = '';
             $customer->save();
 
             return [$customer, $image_camera_url_array];
