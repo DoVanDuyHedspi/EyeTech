@@ -18,6 +18,16 @@ class DetectionController extends Controller
      * Step3: Create new event and return
      * @return \Illuminate\Http\JsonResponse
      */
+    protected $urlHeader, $pathHeader, $pathBody;
+    public function __construct()
+    {
+//        $this->urlHeader = 'http://202.191.56.249/';
+//        $this->pathHeader = '/var/www/html/';
+
+        $this->urlHeader = 'http://localhost/';
+        $this->pathHeader = '/Applications/MAMP/htdocs/';
+    }
+
     public function store(DetectionFormRequest $request)
     {
         //step1
@@ -80,18 +90,16 @@ class DetectionController extends Controller
         $image_url_array = [];
         foreach ($image_camera_base64_array as $image_base64) {
             $image_base64_decode = base64_decode($image_base64);
-            $urlHeader = 'http://202.191.56.249/';
-            $pathHeader = '/var/www/html/';
             $pathBody = 'images/cu/' . $id . '/';
 
-            $path = $pathHeader . $pathBody;
+            $path = $this->pathHeader . $pathBody;
             if (!file_exists($path)) {
                 mkdir($path, 0777, true);
             }
             $imagePathBody = str_random(10) . '.jpg';
             $imagePath = $path . $imagePathBody;
             if (file_put_contents($imagePath, $image_base64_decode)) {
-                $image_url = $urlHeader . $pathBody . $imagePathBody;
+                $image_url = $this->urlHeader . $pathBody . $imagePathBody;
                 array_push($image_url_array, $image_url);
             }
         }
@@ -123,11 +131,11 @@ class DetectionController extends Controller
             }
             $image_camera_url_array = $this->generateImagesUrl($image_camera_base64_array, $customer->_id);
             $customer->image_url_array =  $image_camera_url_array;
-            $customer->name = '';
+            $customer->name = 'New Visitor';
             $customer->age = '';
             $customer->gender = '';
             $customer->telephone = '';
-            $customer->type = '';
+            $customer->type = 'New';
             $customer->address = '';
             $customer->favorites = '';
             $customer->note = '';
@@ -148,10 +156,11 @@ class DetectionController extends Controller
     {
         $event = new Event();
         $event->customer_id = $customer->_id;
-        $event->vector = $customer->vector;
         $event->store_id = $data['store_id'];
-        $event->time_in = $data['time_in'];
+        $event->branch_id = $data['branch_id'];
         $event->camera_id = $data['camera_id'];
+        $event->vector = $customer->vector;
+        $event->time_in = $data['time_in'];
         $event->image_camera_url_array = $image_camera_url_array;
         $event->image_detection_url_array = $customer->image_url_array;
         $event->save();

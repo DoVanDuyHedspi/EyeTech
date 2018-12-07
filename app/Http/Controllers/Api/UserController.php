@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Branch;
+use App\Http\Requests\ClientLoginFormRequest;
 use App\Http\Requests\LoginFormRequest;
 use App\Http\Requests\UserFormRequest;
 use App\User;
@@ -157,10 +159,10 @@ class UserController extends Controller
         if ($user->type == 'branch') {
             $response = [
                 'type' => $user->type,
-                'camera_id' => $user->branch->id,
+                'branch_id' => $user->branch->id,
                 'store_id' => $user->branch->store_id,
                 'access_token' => $tokenResult->accessToken,
-                'expires_at' => $token->expires_at->format('Y/m/d H:i:s'),
+                'expires_at' => $token->expires_at->format('Y-m-d H:i:s'),
             ];
         } elseif ($user->type == 'store') {
             $response = [
@@ -168,13 +170,13 @@ class UserController extends Controller
                 'store_id' => $user->store->id,
                 'branches' => $user->store->branches,
                 'access_token' => $tokenResult->accessToken,
-                'expires_at' => $token->expires_at->format('Y/m/d H:i:s'),
+                'expires_at' => $token->expires_at->format('Y-m-d H:i:s'),
             ];
         } else {
             $response = [
                 'type' => $user->type,
                 "access_token" => $tokenResult->accessToken,
-                "expires_at" => $token->expires_at->format('Y/m/d H:i:s')
+                "expires_at" => $token->expires_at->format('Y-m-d H:i:s')
             ];
         }
         return response()->json($response, 200);
@@ -197,6 +199,21 @@ class UserController extends Controller
             'message' => 'Logged Out Successfully',
         ];
 
+        return response()->json($response, 200);
+    }
+
+    public function clientLogin(ClientLoginFormRequest $request)
+    {
+        $data = $request->all();
+        $branch = Branch::findOrFail($data['branch_id']);
+        $user = User::findOrFail($branch->user_id);
+
+        $tokenResult = $user->createToken('Personal Access Token');
+
+        $response = [
+            'message' => 'Get login for client successfully',
+            'webservice_token' => $tokenResult->accessToken,
+        ];
         return response()->json($response, 200);
     }
 }
