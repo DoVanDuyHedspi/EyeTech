@@ -31,6 +31,11 @@ class Branch extends Authenticatable
         return $this->belongsTo('App\Store', 'store_id');
     }
 
+    public function cameras()
+    {
+        return $this->hasMany('App\Camera', 'branch_id');
+    }
+
     public function address()
     {
         return $this->hasOne('App\Address', 'owner_id');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Branch;
+use App\Camera;
 use App\Http\Requests\ClientLoginFormRequest;
 use App\Http\Requests\LoginFormRequest;
 use App\Http\Requests\UserFormRequest;
@@ -127,6 +128,7 @@ class UserController extends Controller
 
     public function login(LoginFormRequest $request)
     {
+        $checkCam = false;
         $resultR = $this->handleLoginRequest($request);
         $data = $resultR[0];
         $errors = $resultR[1];
@@ -152,20 +154,50 @@ class UserController extends Controller
             ], 401);
         }
 
+        if (($user->type == 'branch') && ($data['camera_id'] != null)) {
+            $branch = Branch::where('user_id', '=', $user->id)->first();
+            $cameras = $branch->cameras()->get();
+            foreach ($cameras as $camera) {
+                if ($camera->id == $data['camera_id']) $checkCam = true;
+            }
+            if ($checkCam == false) {
+                return response()->json([
+                    'message' => 'Login fail! Camera_id '
+                        . $data['camera_id']
+                        . ' does not exist in Branch_id '
+                        . $branch->id,
+                ], 400);
+            }
+        }
+
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;
         $token->expires_at = now()->addDays($this->tokensExpireIn);
 
         if ($user->type == 'branch') {
-            $response = [
-                'type' => $user->type,
-                'branch_id' => $user->branch->id,
-                'store_id' => $user->branch->store_id,
-                'access_token' => $tokenResult->accessToken,
-                'expires_at' => $token->expires_at->format('Y-m-d H:i:s'),
-            ];
+            if ($data['camera_id'] != null) {
+                $response = [
+                    'message' => 'Login successfully',
+                    'type' => $user->type,
+                    'camera_id' => $camera->id,
+                    'branch_id' => $user->branch->id,
+                    'store_id' => $user->branch->store_id,
+                    'access_token' => $tokenResult->accessToken,
+                    'expires_at' => $token->expires_at->format('Y-m-d H:i:s'),
+                ];
+            } else {
+                $response = [
+                    'message' => 'Login successfully',
+                    'type' => $user->type,
+                    'branch_id' => $user->branch->id,
+                    'store_id' => $user->branch->store_id,
+                    'access_token' => $tokenResult->accessToken,
+                    'expires_at' => $token->expires_at->format('Y-m-d H:i:s'),
+                ];
+            }
         } elseif ($user->type == 'store') {
             $response = [
+                'message' => 'Login successfully',
                 'type' => $user->type,
                 'store_id' => $user->store->id,
                 'branches' => $user->store->branches,
@@ -174,6 +206,7 @@ class UserController extends Controller
             ];
         } else {
             $response = [
+                'message' => 'Login successfully',
                 'type' => $user->type,
                 "access_token" => $tokenResult->accessToken,
                 "expires_at" => $token->expires_at->format('Y-m-d H:i:s')
