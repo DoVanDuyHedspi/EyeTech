@@ -16,11 +16,12 @@ class Event extends JsonResource
     {
         return [
             '_id' => $this->id,
-            'store_id' => $this->store_id,
             'customer_id' => $this->customer_id,
+            'store_id' => $this->store_id,
+            'branch_id' => $this->branch_id,
+            'camera_id' => $this->camera_id,
             'vector' => $this->vector,
             'time_in' => $this->time_in,
-            'camera_id' => $this->camera_id,
             'image_camera_url_array' => $this->image_camera_url_array,
             'image_detection_url_array' => $this->image_detection_url_array,
             'emotion' => $this->emotion,

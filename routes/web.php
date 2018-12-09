@@ -18,3 +18,15 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::resource('register-help', 'RegisterHelpController')->only([
+   'index',
+]);
+Route::resource('login-help', 'LoginHelpController')->only([
+    'index',
+]);
+Route::resource('documents', 'DocumentController')->only([
+    'index', 'show'
+]);
+Route::resource('branch-cameras', 'CameraController')->only([
+    'index', 'edit'
+]);

@@ -31,10 +31,11 @@ class DetectionFormRequest extends FormRequest
     public function setRules()
     {
         return [
-            'store_id' => 'required',
             'customer_id' => 'required',
-            'time_in' => 'required|date|date_format:Y-m-d H:i:s',
+            'store_id' => 'required',
+            'branch_id' => 'required',
             'camera_id' => 'required',
+            'time_in' => 'required|date|date_format:Y-m-d H:i:s',
             'image_camera_base64_array' => 'required',
         ];
     }

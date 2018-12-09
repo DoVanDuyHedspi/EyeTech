@@ -31,11 +31,11 @@ class UserFormRequest extends FormRequest
     public function setRules()
     {
         return [
-            'name' => 'required',
-            'email' => 'required',
+            'name' => 'required|min:2',
+            'email' => 'required|email',
             'telephone' => 'required',
-            'password' => 'required',
             'type' => 'required',
+            'password' => 'required|min:6',
         ];
     }
 }

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Branch;
+use App\Camera;
+use App\Http\Requests\ClientLoginFormRequest;
 use App\Http\Requests\LoginFormRequest;
 use App\Http\Requests\UserFormRequest;
 use App\User;
@@ -73,7 +76,8 @@ class UserController extends Controller
                     'info' => [
                         'message' => 'User Created Successfully',
                         'version' => '1.0'
-                    ]
+                    ],
+                    'redirect' => route('register-help.index'),
                 ])
                 ->response()
                 ->setStatusCode(201);
@@ -125,6 +129,7 @@ class UserController extends Controller
 
     public function login(LoginFormRequest $request)
     {
+        $checkCam = false;
         $resultR = $this->handleLoginRequest($request);
         $data = $resultR[0];
         $errors = $resultR[1];
@@ -132,6 +137,7 @@ class UserController extends Controller
             $response = [
                 'message' => 'Error: Request Params Is Not Invalid',
                 'errors' => $errors,
+                'redirect' => route('login-help.index'),
             ];
             return response()->json($response, 400);
         }
@@ -139,15 +145,34 @@ class UserController extends Controller
         $credentials = request(['email', 'password']);
         if (!Auth::attempt($credentials))
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized',
+                'redirect' => route('login-help.index'),
             ], 401);
 
         $user = $request->user();
 
         if ($user->isActive() == false) {
             return response()->json([
-                'message' => 'Acount Not Active'
+                'message' => 'Acount Not Active',
+                'redirect' => route('login-help.index'),
             ], 401);
+        }
+
+        if (($user->type == 'branch') && ($request->has('camera_id'))) {
+            $branch = Branch::where('user_id', '=', $user->id)->first();
+            $cameras = $branch->cameras()->get();
+            foreach ($cameras as $camera) {
+                if ($camera->id == $data['camera_id']) $checkCam = true;
+            }
+            if ($checkCam == false) {
+                return response()->json([
+                    'message' => 'Login fail! Camera_id '
+                        . $data['camera_id']
+                        . ' does not exist in Branch_id '
+                        . $branch->id,
+                    'redirect' => route('login-help.index'),
+                ], 400);
+            }
         }
 
         $tokenResult = $user->createToken('Personal Access Token');
@@ -155,26 +180,45 @@ class UserController extends Controller
         $token->expires_at = now()->addDays($this->tokensExpireIn);
 
         if ($user->type == 'branch') {
-            $response = [
-                'type' => $user->type,
-                'camera_id' => $user->branch->id,
-                'store_id' => $user->branch->store_id,
-                'access_token' => $tokenResult->accessToken,
-                'expires_at' => $token->expires_at->format('Y/m/d H:i:s'),
-            ];
+            if ($request->has('camera_id')) {
+                $response = [
+                    'message' => 'Login successfully',
+                    'type' => $user->type,
+                    'camera_id' => $camera->id,
+                    'branch_id' => $user->branch->id,
+                    'store_id' => $user->branch->store_id,
+                    'access_token' => $tokenResult->accessToken,
+                    'expires_at' => $token->expires_at->format('Y-m-d H:i:s'),
+                    'redirect' => route('documents.index'),
+                ];
+            } else {
+                $response = [
+                    'message' => 'Login successfully',
+                    'type' => $user->type,
+                    'branch_id' => $user->branch->id,
+                    'store_id' => $user->branch->store_id,
+                    'access_token' => $tokenResult->accessToken,
+                    'expires_at' => $token->expires_at->format('Y-m-d H:i:s'),
+                    'redirect' => route('documents.index'),
+                ];
+            }
         } elseif ($user->type == 'store') {
             $response = [
+                'message' => 'Login successfully',
                 'type' => $user->type,
                 'store_id' => $user->store->id,
                 'branches' => $user->store->branches,
                 'access_token' => $tokenResult->accessToken,
-                'expires_at' => $token->expires_at->format('Y/m/d H:i:s'),
+                'expires_at' => $token->expires_at->format('Y-m-d H:i:s'),
+                'redirect' => route('documents.index'),
             ];
         } else {
             $response = [
+                'message' => 'Login successfully',
                 'type' => $user->type,
                 "access_token" => $tokenResult->accessToken,
-                "expires_at" => $token->expires_at->format('Y/m/d H:i:s')
+                "expires_at" => $token->expires_at->format('Y-m-d H:i:s'),
+                'redirect' => route('documents.index'),
             ];
         }
         return response()->json($response, 200);
@@ -197,6 +241,21 @@ class UserController extends Controller
             'message' => 'Logged Out Successfully',
         ];
 
+        return response()->json($response, 200);
+    }
+
+    public function clientLogin(ClientLoginFormRequest $request)
+    {
+        $data = $request->all();
+        $branch = Branch::findOrFail($data['branch_id']);
+        $user = User::findOrFail($branch->user_id);
+
+        $tokenResult = $user->createToken('Personal Access Token');
+
+        $response = [
+            'message' => 'Get login for client successfully',
+            'webservice_token' => $tokenResult->accessToken,
+        ];
         return response()->json($response, 200);
     }
 }
