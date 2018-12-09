@@ -2,63 +2,59 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Camera;
+use App\Http\Requests\CameraFormRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class CameraController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        //check auth user_id ??
+        $cameras = Camera::all();
+        $response = [
+            'message' => 'List Cameras',
+            'cameras' => $cameras,
+        ];
+
+        return response()->json($response, 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function store(CameraFormRequest $request)
     {
-        //
+        $data = $request->all();
+        $camera = new Camera();
+        $camera->name = $data['name'];
+        $camera->branch_id = $data['branch_id'];
+        $camera->save();
+
+        $response = [
+            'message' => 'Create camera successfully',
+            'camera' => $camera,
+            'redirect' => route('branch-cameras.index')
+        ];
+        return response()->json($response, 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        //
+        $camera = Camera::findOrFail($id);
+        $camera->delete();
+
+        $response = [
+            'message' => 'Delete camera successfully',
+        ];
+        return response()->json($response, 200);
     }
 }

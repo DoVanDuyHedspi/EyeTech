@@ -22,6 +22,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
     Route::post('list-branches-id', 'Api\Admin\BranchController@getBranchID');
     Route::post('events-format', 'Api\EventController@formatEventForClient');
     Route::post('users/client-login', 'Api\UserController@clientLogin');
+    Route::apiResource('cameras', 'Api\Admin\CameraController')->only([
+        'index', 'store', 'destroy', 'update'
+    ]);
+    Route::apiResource('user-types', 'Api\Admin\UserTypeController')->only([
+        'index',
+    ]);
 
     Route::group(['middleware' => 'auth:api'], function () {
 

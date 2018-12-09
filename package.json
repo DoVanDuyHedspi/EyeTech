@@ -23,6 +23,7 @@
         "@websanova/vue-auth": "^2.21.14-beta",
         "npm": "^6.4.1",
         "vue-axios": "^2.1.4",
-        "vue-router": "^3.0.1"
+        "vue-router": "^3.0.1",
+        "vue-select": "^2.5.1"
     }
 }
