@@ -31,8 +31,17 @@ class CustomerFormRequest extends FormRequest
     public function setRules()
     {
         return [
-            'vector' => 'required',
-            'name' => 'min:6',
+            'name' => 'required',
+            'email' => 'required',
+            'age' => 'required',
+            'gender' => 'required',
+            'type' => 'required',
+            'telephone' => 'required',
+            'country' => 'required',
+            'city' => 'required',
+            'location' => 'required',
+            'favorites' => 'required',
+            'note' => 'required',
         ];
     }
 }

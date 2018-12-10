@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Customer;
+use App\Http\Requests\EventFormatFormRequest;
 use App\Http\Requests\EventFormRequest;
 use App\Event;
 use App\Http\Controllers\Controller;
@@ -14,10 +15,16 @@ use App\Http\Resources\Event as EventResource;
 
 class EventController extends Controller
 {
-    protected $limitPage;
+    protected $limitPage, $urlHeader, $pathHeader;
     public function __construct()
     {
         $this->limitPage = 10;
+//        $this->urlHeader = 'http://202.191.56.249/';
+//        $this->pathHeader = '/var/www/html/';
+
+        $this->urlHeader = 'http://localhost/';
+        $this->pathHeader = '/Applications/MAMP/htdocs/';
+
     }
 
     public function index()
@@ -174,16 +181,14 @@ class EventController extends Controller
         return [$data, $validator->errors()];
     }
 
-    public function formatEventForClient(Request $request)
+    public function formatEventForClient(EventFormatFormRequest $request)
     {
-        $events = Event::where('camera_id', '=', $request->input('camera_id'))->get();
+        $events = Event::where('branch_id', '=', $request->input('branch_id'))->get();
         $data = [];
         $numberImageCamera = 2;
         $numberImageDetection = 2;
         $image_null_url = 'images/cu/null.png';
         $dataEmptyString = 'Data is empty';
-        $urlHeader = 'http://202.191.56.249/';
-        $pathHeader = '/var/www/html/';
 
         foreach ($events as $event)
         {
@@ -198,8 +203,8 @@ class EventController extends Controller
 
             for ($i=0; $i<$numberImageCamera; $i++) {
                 $imageUrl = $slice_image_camera[$i];
-                $imageUrlBody = str_replace( $urlHeader, '', $imageUrl );
-                $pathImg = $pathHeader . $imageUrlBody;
+                $imageUrlBody = str_replace( $this->urlHeader, '', $imageUrl );
+                $pathImg = $this->pathHeader . $imageUrlBody;
                 if (!file_exists($pathImg)) {
                     $slice_image_camera[$i] = $image_null_url;
                 }
@@ -207,8 +212,8 @@ class EventController extends Controller
 
             for ($i=0; $i<$numberImageDetection; $i++) {
                 $imageUrl = $slice_image_detection[$i];
-                $imageUrlBody = str_replace( $urlHeader, '', $imageUrl );
-                $pathImg = $pathHeader . $imageUrlBody;
+                $imageUrlBody = str_replace( $this->urlHeader, '', $imageUrl );
+                $pathImg = $this->pathHeader . $imageUrlBody;
                 if (!file_exists($pathImg)) {
                     $slice_image_detection[$i] = $image_null_url;
                 }
@@ -221,6 +226,8 @@ class EventController extends Controller
             if ($timeInHandle === null) $timeInHandle = $dataEmptyString;
 
             $eventFormat = [
+                'branch_id' => $request->input('branch_id'),
+                'customer_id' => $customer->id,
                 'name' => $name,
                 'type' => $type,
                 'time_in' => $timeInHandle,
@@ -250,7 +257,6 @@ class EventController extends Controller
         $timeInFormatToSeconds = time() - strtotime($timeInFormat);
 
         $measureTime = round(($timeInFormatToSeconds - $recentTimeToSeconds)/60);
-        $displayTime = '';
         $measureHour = round($measureTime/60);
         $measureDay = round($measureHour/24);
 
