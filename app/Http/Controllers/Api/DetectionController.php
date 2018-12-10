@@ -132,18 +132,26 @@ class DetectionController extends Controller
             $image_camera_url_array = $this->generateImagesUrl($image_camera_base64_array, $customer->_id);
             $customer->image_url_array =  $image_camera_url_array;
             $customer->name = 'New Visitor';
+            $customer->email = '';
             $customer->age = '';
             $customer->gender = '';
             $customer->telephone = '';
             $customer->type = 'New';
-            $customer->address = '';
             $customer->favorites = '';
             $customer->note = '';
+            $customer->address = [
+                'country' => '',
+                'city' => '',
+                'location' => '',
+            ];
             $customer->save();
-
             return [$customer, $image_camera_url_array];
         } else {
             $customer = Customer::find($id);
+            if ($customer->name == 'New Visitor') {
+                $customer->name = 'Old Visitor';
+                $customer->save();
+            }
             if (!$customer) {
                 return false;
             }

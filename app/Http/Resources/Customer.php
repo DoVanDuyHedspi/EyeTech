@@ -20,6 +20,7 @@ class Customer extends JsonResource
             'image_url_array' => $this->image_url_array,
             'vector' => $this->vector,
             'name' => $this->name,
+            'email' => $this->email,
             'age' => $this->age,
             'gender' => $this->gender,
             'telephone' => $this->telephone,

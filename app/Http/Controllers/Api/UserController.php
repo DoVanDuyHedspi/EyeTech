@@ -184,7 +184,7 @@ class UserController extends Controller
                 $response = [
                     'message' => 'Login successfully',
                     'type' => $user->type,
-                    'camera_id' => $camera->id,
+                    'camera_id' => $request->input('camera_id'),
                     'branch_id' => $user->branch->id,
                     'store_id' => $user->branch->store_id,
                     'access_token' => $tokenResult->accessToken,

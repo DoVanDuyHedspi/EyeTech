@@ -14,10 +14,11 @@ use Validator;
 
 class CustomerController extends Controller
 {
-    protected $limitPage;
+    protected $limitPage, $customerProfileUrl;
     public function __construct()
     {
         $this->limitPage = 10;
+        $this->customerProfileUrlHeader = 'http://localhost/eyetech-client/customers/';
     }
 
     public function index()
@@ -79,10 +80,9 @@ class CustomerController extends Controller
 
     public function show($id)
     {
-        $owner = Auth::user();
         $customer = Customer::find($id);
 
-        if ((!$customer) || ($customer->owner_id != $owner->id)) {
+        if (!$customer) {
             $response = [
                 'message' => 'Customer Does Not Exist',
             ];
@@ -102,8 +102,6 @@ class CustomerController extends Controller
 
     public function update(CustomerFormRequest $request, $id)
     {
-        $owner = Auth::user();
-
         $resultR = $this->handleRequest($request);
         $data = $resultR[0];
         $errors = $resultR[1];
@@ -129,18 +127,21 @@ class CustomerController extends Controller
             ];
             return response()->json($response, 400);
         }
+        $customer->email = $request->input('email');
         $customer->address = [
             'country' => $request->input('country'),
             'city' => $request->input('city'),
             'location' => $request->input('location'),
         ];
+        $customer->save();
 
         return (new CustomerResource($customer))
             ->additional([
                 'info' => [
                     'message' => 'Customer Updated Successfully',
                     'version' => '1.0',
-                ]
+                ],
+                'redirect' => $this->customerProfileUrl . $id,
             ])
             ->response()
             ->setStatusCode(201);

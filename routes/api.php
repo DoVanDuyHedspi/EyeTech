@@ -28,6 +28,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
     Route::apiResource('user-types', 'Api\Admin\UserTypeController')->only([
         'index',
     ]);
+    Route::get('customers/{customer}', 'Api\CustomerController@show');
+    Route::patch('customers/{customer}', 'Api\CustomerController@update');
 
     Route::group(['middleware' => 'auth:api'], function () {
 

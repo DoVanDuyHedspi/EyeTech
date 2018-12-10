@@ -14,7 +14,7 @@
                     <li><a href="#"><div>Profile</div></a>
                         <ul>
                             <li><a href="#"><div><i class="icon-stack"></i>Edit</div></a></li>
-                            <li><a href="{{ route('cameras.index') }}"><div><i class="icon-stack"></i>Cameras</div></a></li>
+                            <li><a href="{{ route('branch-cameras.index') }}"><div><i class="icon-stack"></i>Cameras</div></a></li>
                             <li><a href="#"><div><i class="icon-stack"></i>Logout</div></a></li>
                         </ul>
                     </li>

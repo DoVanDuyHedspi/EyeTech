@@ -14,6 +14,7 @@ class Customer extends Eloquent
         'image_url_array',
         'vector',
         'name',
+        'email',
         'age',
         'gender',
         'telephone',
