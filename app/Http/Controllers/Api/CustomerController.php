@@ -18,7 +18,8 @@ class CustomerController extends Controller
     public function __construct()
     {
         $this->limitPage = 10;
-        $this->customerProfileUrlHeader = 'http://localhost/eyetech-client/customers/';
+//        $this->customerProfileUrlHeader = 'http://localhost/eyetech-client/customers/';
+        $this->customerProfileUrlHeader = 'http://202.191.56.249/client/customers/';
     }
 
     public function index()

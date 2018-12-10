@@ -10,21 +10,25 @@ use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use phpDocumentor\Reflection\Types\Integer;
 use Validator;
 use App\Http\Resources\Event as EventResource;
 
 class EventController extends Controller
 {
-    protected $limitPage, $urlHeader, $pathHeader;
+    protected $limitPage, $urlHeader, $pathHeader, $image_null_url;
     public function __construct()
     {
         $this->limitPage = 10;
-//        $this->urlHeader = 'http://202.191.56.249/';
-//        $this->pathHeader = '/var/www/html/';
+        $image_null_url_body = 'images/cu/null.png';
 
-        $this->urlHeader = 'http://localhost/';
-        $this->pathHeader = '/Applications/MAMP/htdocs/';
+        $this->urlHeader = 'http://202.191.56.249/';
+        $this->pathHeader = '/var/www/html/';
 
+        //$this->urlHeader = 'http://localhost/';
+        //$this->pathHeader = '/Applications/MAMP/htdocs/';
+
+        $this->image_null_url = $this->urlHeader . $image_null_url_body;
     }
 
     public function index()
@@ -183,55 +187,30 @@ class EventController extends Controller
 
     public function formatEventForClient(EventFormatFormRequest $request)
     {
-        $events = Event::where('branch_id', '=', $request->input('branch_id'))->get();
-        $data = [];
-        $numberImageCamera = 2;
-        $numberImageDetection = 2;
-        $image_null_url = 'images/cu/null.png';
-        $dataEmptyString = 'Data is empty';
+        $events = Event::where('branch_id', '=', $request->input('branch_id'))
+            ->orderBy('time_in', 'desc')
+            ->get();
 
+        $data = [];
         foreach ($events as $event)
         {
-            $timeInFormat = $event->time_in;
             $customer = Customer::find($event->customer_id);
-            $name = is_null($customer->name) ? $dataEmptyString : $customer->name;
-            $type = is_null($customer->type) ? $dataEmptyString : $customer->type;
-            $favorites = is_null($customer->favorites) ? $dataEmptyString : $customer->favorites;
 
-            $slice_image_camera = array_slice($event->image_camera_url_array, 0, $numberImageCamera);
-            $slice_image_detection = array_slice($event->image_detection_url_array, 0, $numberImageDetection);
+            $numberImageCamera = 2;
+            $numberImageDetection = 2;
+            $slice_image_camera = $this->handleImage($event->image_camera_url_array, $numberImageCamera);
+            $slice_image_detection = $this->handleImage($event->image_detection_url_array, $numberImageDetection);
 
-            for ($i=0; $i<$numberImageCamera; $i++) {
-                $imageUrl = $slice_image_camera[$i];
-                $imageUrlBody = str_replace( $this->urlHeader, '', $imageUrl );
-                $pathImg = $this->pathHeader . $imageUrlBody;
-                if (!file_exists($pathImg)) {
-                    $slice_image_camera[$i] = $image_null_url;
-                }
-            }
-
-            for ($i=0; $i<$numberImageDetection; $i++) {
-                $imageUrl = $slice_image_detection[$i];
-                $imageUrlBody = str_replace( $this->urlHeader, '', $imageUrl );
-                $pathImg = $this->pathHeader . $imageUrlBody;
-                if (!file_exists($pathImg)) {
-                    $slice_image_detection[$i] = $image_null_url;
-                }
-            }
-
-            $timeInHandle = $this->handleTimeIn($timeInFormat);
-
-            if ($slice_image_camera === null) $slice_image_camera = $image_null_url;
-            if ($slice_image_detection === null) $slice_image_detection = $image_null_url;
-            if ($timeInHandle === null) $timeInHandle = $dataEmptyString;
+            $timeInDefault = $event->time_in;
+            $timeInHandle = $this->handleTimeIn($timeInDefault);
 
             $eventFormat = [
                 'branch_id' => $request->input('branch_id'),
                 'customer_id' => $customer->id,
-                'name' => $name,
-                'type' => $type,
+                'name' => $customer->name,
+                'type' => $customer->type,
                 'time_in' => $timeInHandle,
-                'favorites' => $favorites,
+                'favorites' => $customer->favorites,
                 'image_camera_url_array' => $slice_image_camera,
                 'image_detection_url_array' => $slice_image_detection,
             ];
@@ -245,22 +224,87 @@ class EventController extends Controller
         return response()->json($response, 200);
     }
 
-    public function handleTimeIn($timeInFormat)
+    public function formatQuickEventForClient(EventFormatFormRequest $request)
     {
-        if ($this->validateDate($timeInFormat) == false) {
+        if ($request->has('number_field')) {
+            $events = Event::where('branch_id', '=', $request->input('branch_id'))
+                ->orderBy('time_in', 'desc')
+                ->take($request->input('number_field'))
+                ->get();
+        } else {
+            $default_number_field = 5;
+            $events = Event::where('branch_id', '=', $request->input('branch_id'))
+                ->orderBy('time_in', 'desc')
+                ->take($default_number_field)
+                ->get();
+        }
+
+        $data = [];
+        foreach ($events as $event) {
+            $customer = Customer::find($event->customer_id);
+
+            $timeInDefault = $event->time_in;
+            $timeInHandle = $this->handleTimeIn($timeInDefault);
+            $slice_image_detection = $this->checkImageNull($event->image_detection_url_array[0]);
+            $slice_image_camera = $this->checkImageNull($event->image_camera_url_array[0]);
+
+            $quick_event_format = [
+                'name' => $customer->name,
+                'time_in' => $timeInHandle,
+                'type' => $customer->type,
+                'avatar' => $slice_image_detection,
+                'image_camera_url_array' => $slice_image_camera,
+            ];
+
+            array_push($data, $quick_event_format);
+        }
+
+        $response = [
+            'message' => 'List of quick events formatted',
+            'data' => $data
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    public function checkImageNull($imageUrl)
+    {
+        $imageUrlBody = str_replace( $this->urlHeader, '', $imageUrl );
+        $pathImg = $this->pathHeader . $imageUrlBody;
+        if (!file_exists($pathImg)) {
+            $imageUrl = $this->image_null_url;
+        }
+        return $imageUrl;
+    }
+
+    public function handleImage($image_array_default, $quantity)
+    {
+        $slice_image_array = array_slice($image_array_default, 0, $quantity);
+        $slice_image_array = is_null($slice_image_array) ? $this->image_null_url : $slice_image_array;
+        for ($i=0; $i<$quantity; $i++) {
+            $imageUrl = $slice_image_array[$i];
+            $slice_image_array[$i] = $this->checkImageNull($imageUrl);
+        }
+        return $slice_image_array;
+    }
+
+    public function handleTimeIn($timeInDefault)
+    {
+        if ($this->validateDate($timeInDefault) == false) {
             return false;
         }
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $recentTime = date('Y-m-d H:i:s');
 
         $recentTimeToSeconds = time() - strtotime($recentTime);
-        $timeInFormatToSeconds = time() - strtotime($timeInFormat);
+        $timeInDefaultToSeconds = time() - strtotime($timeInDefault);
 
-        $measureTime = round(($timeInFormatToSeconds - $recentTimeToSeconds)/60);
+        $measureTime = round(($timeInDefaultToSeconds - $recentTimeToSeconds)/60);
+        $measureTime = max($measureTime, 0);
         $measureHour = round($measureTime/60);
         $measureDay = round($measureHour/24);
 
-        switch ($measureTime) {
+        switch (true) {
             case ($measureTime == 0):
                 $displayTime = 'Now';
                 break;
@@ -274,7 +318,7 @@ class EventController extends Controller
                 $displayTime = $measureDay . ' day ago';
                 break;
             default:
-                $displayTime = $timeInFormat;
+                $displayTime = $timeInDefault;
                 break;
         }
 

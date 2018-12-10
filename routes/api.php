@@ -21,6 +21,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
     Route::get('list-stores-id', 'Api\Admin\StoreController@getStoreID');
     Route::post('list-branches-id', 'Api\Admin\BranchController@getBranchID');
     Route::post('events-format', 'Api\EventController@formatEventForClient');
+    Route::post('quick-events-format', 'Api\EventController@formatQuickEventForClient');
     Route::post('users/client-login', 'Api\UserController@clientLogin');
     Route::apiResource('cameras', 'Api\Admin\CameraController')->only([
         'index', 'store', 'destroy', 'update'
