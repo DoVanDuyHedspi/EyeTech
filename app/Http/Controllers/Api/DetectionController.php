@@ -21,11 +21,11 @@ class DetectionController extends Controller
     protected $urlHeader, $pathHeader, $pathBody;
     public function __construct()
     {
-//        $this->urlHeader = 'http://202.191.56.249/';
-//        $this->pathHeader = '/var/www/html/';
+        $this->urlHeader = 'http://202.191.56.249/';
+        $this->pathHeader = '/var/www/html/';
 
-        $this->urlHeader = 'http://localhost/';
-        $this->pathHeader = '/Applications/MAMP/htdocs/';
+//        $this->urlHeader = 'http://localhost/';
+//        $this->pathHeader = '/Applications/MAMP/htdocs/';
     }
 
     public function store(DetectionFormRequest $request)
