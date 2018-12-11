@@ -51,9 +51,11 @@
         },
         methods: {
             fetchUserTypes() {
+                // var url = 'http://localhost/eyetech/api/v1/user-types';
+                var url = 'http://202.191.56.249/eyetech/api/v1/user-types';
                 axios({
                     method: 'get',
-                    url: 'http://localhost/eyetech/api/v1/user-types'
+                    url: url,
                 })
                     .then(response => {
                         this.types = response.data.types;
@@ -64,9 +66,11 @@
                     })
             },
             register() {
+                // var url = 'http://localhost/eyetech/api/v1/users/register';
+                var url = 'http://202.191.56.249/eyetech/api/v1/users/register';
                 axios({
                     method: 'post',
-                    url: 'http://localhost/eyetech/api/v1/users/register',
+                    url: url,
                     data: {
                         name: this.name,
                         email: this.email,

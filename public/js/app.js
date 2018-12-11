@@ -47685,7 +47685,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -47785,9 +47785,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         fetchUserTypes: function fetchUserTypes() {
             var _this = this;
 
+            // var url = 'http://localhost/eyetech/api/v1/user-types';
+            var url = 'http://202.191.56.249/eyetech/api/v1/user-types';
             axios({
                 method: 'get',
-                url: 'http://localhost/eyetech/api/v1/user-types'
+                url: url
             }).then(function (response) {
                 _this.types = response.data.types;
                 console.log(response);
@@ -47796,9 +47798,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
         register: function register() {
+            // var url = 'http://localhost/eyetech/api/v1/users/register';
+            var url = 'http://202.191.56.249/eyetech/api/v1/users/register';
             axios({
                 method: 'post',
-                url: 'http://localhost/eyetech/api/v1/users/register',
+                url: url,
                 data: {
                     name: this.name,
                     email: this.email,
@@ -48121,7 +48125,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -48166,9 +48170,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
         login: function login() {
+            // var url = 'http://localhost/eyetech/api/v1/users/login';
+            var url = 'http://202.191.56.249/eyetech/api/v1/users/login';
             axios({
                 method: 'post',
-                url: 'http://localhost/eyetech/api/v1/users/login',
+                url: url,
                 data: {
                     email: this.email,
                     password: this.password
