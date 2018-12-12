@@ -187,7 +187,9 @@ class EventController extends Controller
 
     public function formatEventForClient(EventFormatFormRequest $request)
     {
-        $events = Event::where('branch_id', '=', $request->input('branch_id'))
+        // to fix error branch_id type is String from vuejs
+        $branch_id = intval($request->input('branch_id'));
+        $events = Event::where('branch_id', '=', $branch_id)
             ->orderBy('time_in', 'desc')
             ->get();
 
@@ -205,7 +207,7 @@ class EventController extends Controller
             $timeInHandle = $this->handleTimeIn($timeInDefault);
 
             $eventFormat = [
-                'branch_id' => $request->input('branch_id'),
+                'branch_id' => $branch_id,
                 'customer_id' => $customer->id,
                 'name' => $customer->name,
                 'type' => $customer->type,
@@ -221,19 +223,22 @@ class EventController extends Controller
             'message' => 'List Event Formatted',
             'data' => $data
         ];
+
         return response()->json($response, 200);
     }
 
     public function formatQuickEventForClient(EventFormatFormRequest $request)
     {
+        // to fix error branch_id type is String from vuejs
+        $branch_id = intval($request->input('branch_id'));
         if ($request->has('number_field')) {
-            $events = Event::where('branch_id', '=', $request->input('branch_id'))
+            $events = Event::where('branch_id', '=', $branch_id)
                 ->orderBy('time_in', 'desc')
                 ->take($request->input('number_field'))
                 ->get();
         } else {
             $default_number_field = 5;
-            $events = Event::where('branch_id', '=', $request->input('branch_id'))
+            $events = Event::where('branch_id', '=', $branch_id)
                 ->orderBy('time_in', 'desc')
                 ->take($default_number_field)
                 ->get();
