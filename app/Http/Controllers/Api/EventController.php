@@ -200,8 +200,8 @@ class EventController extends Controller
             $customer = Customer::find($event->customer_id);
             $camera = Camera::findOrFail($event->camera_id);
 
-            $numberImageCamera = 2;
-            $numberImageDetection = 2;
+            $numberImageCamera = 1;
+            $numberImageDetection = 1;
             $slice_image_camera = $this->handleImage($event->image_camera_url_array, $numberImageCamera);
             $slice_image_detection = $this->handleImage($event->image_detection_url_array, $numberImageDetection);
             $avatar = $this->checkImageNull($event->image_camera_url_array[0]);
