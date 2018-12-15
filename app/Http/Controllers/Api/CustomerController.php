@@ -90,12 +90,15 @@ class CustomerController extends Controller
             return response()->json($response, 404);
         }
 
+        $avatar = $this->checkImageNull($customer->image_url_array[0]);
+
         return (new CustomerResource($customer))
             ->additional([
                 'info' => [
                     'message' => 'Customer Information',
                     'version' => '1.0',
-                ]
+                ],
+                'avatar_url' => $avatar,
             ])
             ->response()
             ->setStatusCode(200);
@@ -218,5 +221,15 @@ class CustomerController extends Controller
             return [false, $validator->errors()];
         }
         return [$data, $validator->errors()];
+    }
+
+    public function checkImageNull($imageUrl)
+    {
+        $imageUrlBody = str_replace( $this->urlHeader, '', $imageUrl );
+        $pathImg = $this->pathHeader . $imageUrlBody;
+        if (!file_exists($pathImg)) {
+            $imageUrl = $this->image_null_url;
+        }
+        return $imageUrl;
     }
 }
