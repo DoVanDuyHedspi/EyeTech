@@ -257,6 +257,7 @@ class EventController extends Controller
             $timeInHandle = $this->handleTimeIn($timeInDefault);
             $slice_image_detection = $this->checkImageNull($event->image_detection_url_array[0]);
             $slice_image_camera = $this->checkImageNull($event->image_camera_url_array[0]);
+            $customer_profile_url = $request->input('route_header') . '/' . $event->customer_id;
 
             $quick_event_format = [
                 'name' => $customer->name,
@@ -264,6 +265,7 @@ class EventController extends Controller
                 'type' => $customer->type,
                 'avatar' => $slice_image_detection,
                 'image_camera_url_array' => $slice_image_camera,
+                'customer_profile_url' => $customer_profile_url,
             ];
 
             array_push($data, $quick_event_format);
