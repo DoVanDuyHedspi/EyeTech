@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Customer;
+use App\Event;
 use App\Http\Requests\CustomerFormRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VectorIdFormRequest;
 use App\Http\Resources\Customer as CustomerResource;
 use App\Http\Resources\CustomerIdVector as CustomerIdVectorResource;
-use App\Store;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 
@@ -158,12 +158,22 @@ class CustomerController extends Controller
     public function destroy($id)
     {
         $customer = Customer::find($id);
+        $events = Event::where('customer_id', '=', $id)->get();
         if (!$customer) {
             $response = [
                 'message' => 'Customer Does Not Exist',
             ];
 
             return response()->json($response, 404);
+        }
+        foreach ($events as $event) {
+            if (!$event->delete()) {
+                $response = [
+                    'message' => 'Error: Delete Event Of Customer Fail',
+                ];
+
+                return response()->json($response, 400);
+            }
         }
         if (!$customer->delete()) {
             $response = [
