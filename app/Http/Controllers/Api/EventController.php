@@ -209,10 +209,10 @@ class EventController extends Controller
             $timeInDefault = $event->time_in;
             $timeInHandle = $this->handleTimeIn($timeInDefault);
 
-            $customer_edit_url = $request->input('route_header') . '/' . $event->customer_id . '/edit';
+            $customer_profile_url = $request->input('route_header') . '/' . $event->customer_id;
             $eventFormat = [
                 'customer_id' => $customer->id,
-                'customer_edit_url' => $customer_edit_url,
+                'customer_edit_url' => $customer_profile_url,
                 'avatar' => $avatar,
                 'name' => $customer->name,
                 'type' => $customer->type,
