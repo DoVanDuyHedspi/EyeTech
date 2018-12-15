@@ -157,8 +157,6 @@ class CustomerController extends Controller
 
     public function destroy($id)
     {
-        $owner = Auth::user();
-
         $customer = Customer::find($id);
         if (!$customer) {
             $response = [
