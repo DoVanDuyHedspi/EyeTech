@@ -212,7 +212,7 @@ class EventController extends Controller
             $customer_profile_url = $request->input('route_header') . '/' . $event->customer_id;
             $eventFormat = [
                 'customer_id' => $customer->id,
-                'customer_edit_url' => $customer_profile_url,
+                'customer_profile_url' => $customer_profile_url,
                 'avatar' => $avatar,
                 'name' => $customer->name,
                 'type' => $customer->type,
