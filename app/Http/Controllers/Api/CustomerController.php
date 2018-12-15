@@ -14,12 +14,16 @@ use Validator;
 
 class CustomerController extends Controller
 {
-    protected $limitPage, $customerProfileUrl;
+    protected $limitPage, $customerProfileUrl, $urlHeader, $pathHeader, $image_null_url;
     public function __construct()
     {
+        $image_null_url_body = 'images/cu/null.png';
         $this->limitPage = 10;
 //        $this->customerProfileUrlHeader = 'http://localhost/eyetech-client/customers/';
         $this->customerProfileUrlHeader = 'http://202.191.56.249/client/customers/';
+        $this->urlHeader = 'http://202.191.56.249/';
+        $this->pathHeader = '/var/www/html/';
+        $this->image_null_url = $this->urlHeader . $image_null_url_body;
     }
 
     public function index()
