@@ -21,6 +21,7 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('list-stores-id', 'Api\Admin\StoreController@getStoreID');
     Route::get('list-stores-client', 'Api\Admin\StoreController@getStoreForClient');
     Route::post('list-branches-id', 'Api\Admin\BranchController@getBranchID');
+    Route::post('list-branches-client', 'Api\Admin\BranchController@getBranchForClient');
     Route::post('events-format', 'Api\EventController@formatEventForClient');
     Route::post('quick-events-format', 'Api\EventController@formatQuickEventForClient');
     Route::post('users/client-login', 'Api\UserController@clientLogin');
