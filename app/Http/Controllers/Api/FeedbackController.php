@@ -159,7 +159,7 @@ class FeedbackController extends Controller
         $data = $request->all();
         $feedbacks = Feedback::where('branch_id', '=', $data['branch_id'])->get();
         $branch = Branch::find($data['branch_id']);
-        $branch_name = $branch->user-name;
+        $branch_name = $branch->user->name;
 
         $data = [];
         foreach ($feedbacks as $feedback) {
