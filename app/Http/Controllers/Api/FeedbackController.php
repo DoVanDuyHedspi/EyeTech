@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Branch;
 use App\Http\Requests\FeedbackFormRequest;
 use App\Http\Controllers\Controller;
 use App\Feedback;
+use App\Http\Requests\FormatFeedbackFormRequest;
 
 class FeedbackController extends Controller
 {
@@ -147,6 +149,33 @@ class FeedbackController extends Controller
         }
         $response = [
             'message' => 'Feedback destroy successfully',
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    public function formatFeedbacks(FormatFeedbackFormRequest $request)
+    {
+        $data = $request->all();
+        $feedbacks = Feedback::where('branch_id', '=', $data['branch_id'])->get();
+        $branch = Branch::find($data['branch_id']);
+        $branch_name = $branch->user-name;
+
+        $data = [];
+        foreach ($feedbacks as $feedback) {
+            $value = [
+                'event_id' => $feedback->event_id,
+                'branch_name' => $branch_name,
+                'camera_name' => $feedback->camera_name,
+                'status' => $feedback->status
+            ];
+
+            array_push($data, $value);
+        }
+
+        $response = [
+            'message' => 'List Feedbacks Format',
+            'data' => $data,
         ];
 
         return response()->json($response, 200);
