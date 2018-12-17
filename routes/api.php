@@ -34,7 +34,7 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('customers/{customer}', 'Api\CustomerController@show');
     Route::patch('customers/{customer}', 'Api\CustomerController@update');
     Route::delete('customers/{customer}', 'Api\CustomerController@destroy');
-    Route::get('feedbacks/format', 'Api\FeedbackController@formatFeedbacks');
+    Route::post('feedbacks/format', 'Api\FeedbackController@formatFeedbacks');
     Route::apiResource('feedbacks', 'Api\FeedbackController');
 
     Route::group(['middleware' => 'auth:api'], function () {
