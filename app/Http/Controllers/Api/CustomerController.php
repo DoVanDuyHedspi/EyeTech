@@ -135,7 +135,6 @@ class CustomerController extends Controller
             ];
             return response()->json($response, 400);
         }
-        $customer->email = $request->input('email');
         $customer->address = [
             'country' => $request->input('country'),
             'city' => $request->input('city'),
