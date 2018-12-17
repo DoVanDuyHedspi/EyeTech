@@ -25,7 +25,7 @@ class FeedbackFormRequest extends FormRequest
     {
         return [
             'branch_id' => 'required',
-            'camera_id' => 'required',
+            'camera_name' => 'required',
             'event_id' => 'required',
             'status' => 'required',
         ];
