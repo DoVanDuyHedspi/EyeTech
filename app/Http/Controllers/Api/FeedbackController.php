@@ -34,6 +34,21 @@ class FeedbackController extends Controller
     public function store(FeedbackFormRequest $request)
     {
         $data = $request->all();
+        $feedbacks = Feedback::all();
+        $isExist = false;
+        foreach ($feedbacks as $feedback) {
+            if ($data['event_id'] == $feedback->event_id) {
+                $isExist = true;
+                break;
+            }
+        }
+        if ($isExist == true) {
+            $response = [
+                'message' => 'This event is existed in feedback',
+            ];
+
+            return response()->json($response, 400);
+        }
         $feedback = new Feedback();
         $feedback->event_id = $data['event_id'];
         $feedback->status = $data['status'];
