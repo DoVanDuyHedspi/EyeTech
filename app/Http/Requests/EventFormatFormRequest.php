@@ -25,6 +25,7 @@ class EventFormatFormRequest extends FormRequest
     {
         return [
             'branch_id' => 'required',
+            'route_header' => 'required',
         ];
     }
 }

@@ -3,23 +3,27 @@
 namespace App\Http\Controllers\Api;
 
 use App\Customer;
+use App\Event;
 use App\Http\Requests\CustomerFormRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VectorIdFormRequest;
 use App\Http\Resources\Customer as CustomerResource;
 use App\Http\Resources\CustomerIdVector as CustomerIdVectorResource;
-use App\Store;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 
 class CustomerController extends Controller
 {
-    protected $limitPage, $customerProfileUrl;
+    protected $limitPage, $customerProfileUrl, $urlHeader, $pathHeader, $image_null_url;
     public function __construct()
     {
+        $image_null_url_body = 'images/cu/null.png';
         $this->limitPage = 10;
 //        $this->customerProfileUrlHeader = 'http://localhost/eyetech-client/customers/';
         $this->customerProfileUrlHeader = 'http://202.191.56.249/client/customers/';
+        $this->urlHeader = 'http://202.191.56.249/';
+        $this->pathHeader = '/var/www/html/';
+        $this->image_null_url = $this->urlHeader . $image_null_url_body;
     }
 
     public function index()
@@ -90,12 +94,15 @@ class CustomerController extends Controller
             return response()->json($response, 404);
         }
 
+        $avatar = $this->checkImageNull($customer->image_url_array[0]);
+
         return (new CustomerResource($customer))
             ->additional([
                 'info' => [
                     'message' => 'Customer Information',
                     'version' => '1.0',
-                ]
+                ],
+                'avatar_url' => $avatar,
             ])
             ->response()
             ->setStatusCode(200);
@@ -128,7 +135,6 @@ class CustomerController extends Controller
             ];
             return response()->json($response, 400);
         }
-        $customer->email = $request->input('email');
         $customer->address = [
             'country' => $request->input('country'),
             'city' => $request->input('city'),
@@ -150,15 +156,23 @@ class CustomerController extends Controller
 
     public function destroy($id)
     {
-        $owner = Auth::user();
-
         $customer = Customer::find($id);
+        $events = Event::where('customer_id', '=', $id)->get();
         if (!$customer) {
             $response = [
                 'message' => 'Customer Does Not Exist',
             ];
 
             return response()->json($response, 404);
+        }
+        foreach ($events as $event) {
+            if (!$event->delete()) {
+                $response = [
+                    'message' => 'Error: Delete Event Of Customer Fail',
+                ];
+
+                return response()->json($response, 400);
+            }
         }
         if (!$customer->delete()) {
             $response = [
@@ -218,5 +232,15 @@ class CustomerController extends Controller
             return [false, $validator->errors()];
         }
         return [$data, $validator->errors()];
+    }
+
+    public function checkImageNull($imageUrl)
+    {
+        $imageUrlBody = str_replace( $this->urlHeader, '', $imageUrl );
+        $pathImg = $this->pathHeader . $imageUrlBody;
+        if (!file_exists($pathImg)) {
+            $imageUrl = $this->image_null_url;
+        }
+        return $imageUrl;
     }
 }

@@ -96,4 +96,25 @@ class BranchController extends Controller
 
         return response()->json($response, 200);
     }
+    public function getBranchForClient(ListBranchFormRequest $request)
+    {
+        $data = $request->all();
+        $branches = Branch::where('store_id', '=', $data['store_id'])->get();
+        $data = [];
+        foreach ($branches as $branch) {
+            $branch_name = $branch->user->name;
+            $value = [
+                'value' => $branch->id,
+                'text' => $branch_name
+            ];
+            array_push($data, $value);
+        }
+
+        $response = [
+            'message' => 'List branches format for client',
+            'branches' => $data
+        ];
+
+        return response()->json($response, 200);
+    }
 }

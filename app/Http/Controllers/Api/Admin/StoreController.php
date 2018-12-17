@@ -54,4 +54,23 @@ class StoreController extends Controller
 
         return response()->json($response, 200);
     }
+    public function getStoreForClient()
+    {
+        $stores = Store::all();
+        $data = [];
+        foreach ($stores as $store) {
+            $store_name = $store->user->name;
+            $value = [
+                'value' => $store->id,
+                'text' => $store_name,
+            ];
+            array_push($data, $value);
+        }
+
+        $response = [
+            'message' => 'List stores format for client.',
+            'stores' => $data,
+        ];
+        return response()->json($response, 200);
+    }
 }

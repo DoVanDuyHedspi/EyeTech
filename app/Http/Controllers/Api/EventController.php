@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Camera;
 use App\Customer;
 use App\Http\Requests\EventFormatFormRequest;
 use App\Http\Requests\EventFormRequest;
@@ -197,24 +198,28 @@ class EventController extends Controller
         foreach ($events as $event)
         {
             $customer = Customer::find($event->customer_id);
+            $camera = Camera::findOrFail($event->camera_id);
 
-            $numberImageCamera = 2;
-            $numberImageDetection = 2;
+            $numberImageCamera = 1;
+            $numberImageDetection = 1;
             $slice_image_camera = $this->handleImage($event->image_camera_url_array, $numberImageCamera);
             $slice_image_detection = $this->handleImage($event->image_detection_url_array, $numberImageDetection);
+            $avatar = $this->checkImageNull($event->image_camera_url_array[0]);
 
             $timeInDefault = $event->time_in;
             $timeInHandle = $this->handleTimeIn($timeInDefault);
 
+            $customer_profile_url = $request->input('route_header') . '/' . $event->customer_id;
             $eventFormat = [
-                'branch_id' => $branch_id,
                 'customer_id' => $customer->id,
+                'customer_profile_url' => $customer_profile_url,
+                'avatar' => $avatar,
                 'name' => $customer->name,
                 'type' => $customer->type,
-                'time_in' => $timeInHandle,
-                'favorites' => $customer->favorites,
+                'camera' => $camera->name,
                 'image_camera_url_array' => $slice_image_camera,
                 'image_detection_url_array' => $slice_image_detection,
+                'time_in' => $timeInHandle,
             ];
             array_push($data, $eventFormat);
         }
@@ -252,6 +257,7 @@ class EventController extends Controller
             $timeInHandle = $this->handleTimeIn($timeInDefault);
             $slice_image_detection = $this->checkImageNull($event->image_detection_url_array[0]);
             $slice_image_camera = $this->checkImageNull($event->image_camera_url_array[0]);
+            $customer_profile_url = $request->input('route_header') . '/' . $event->customer_id;
 
             $quick_event_format = [
                 'name' => $customer->name,
@@ -259,6 +265,7 @@ class EventController extends Controller
                 'type' => $customer->type,
                 'avatar' => $slice_image_detection,
                 'image_camera_url_array' => $slice_image_camera,
+                'customer_profile_url' => $customer_profile_url,
             ];
 
             array_push($data, $quick_event_format);
