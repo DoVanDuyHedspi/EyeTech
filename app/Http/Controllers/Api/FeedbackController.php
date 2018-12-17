@@ -157,8 +157,9 @@ class FeedbackController extends Controller
     public function formatFeedbacks(FormatFeedbackFormRequest $request)
     {
         $data = $request->all();
-        $feedbacks = Feedback::where('branch_id', '=', $data['branch_id'])->get();
-        $branch = Branch::find($data['branch_id']);
+        $branch_id = intval($data['branch_id']);
+        $feedbacks = Feedback::where('branch_id', '=', $branch_id)->get();
+        $branch = Branch::find($branch_id);
         $branch_name = $branch->user->name;
 
         $data = [];
