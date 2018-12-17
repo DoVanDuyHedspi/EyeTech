@@ -24,6 +24,8 @@ class FeedbackFormRequest extends FormRequest
     public function rules()
     {
         return [
+            'branch_id' => 'required',
+            'camera_id' => 'required',
             'event_id' => 'required',
             'status' => 'required',
         ];

@@ -50,6 +50,8 @@ class FeedbackController extends Controller
             return response()->json($response, 400);
         }
         $feedback = new Feedback();
+        $feedback->branch_id = $data['branch_id'];
+        $feedback->camera_id = $data['camera_id'];
         $feedback->event_id = $data['event_id'];
         $feedback->status = $data['status'];
         $feedback->save();
