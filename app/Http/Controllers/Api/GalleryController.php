@@ -106,8 +106,9 @@ class GalleryController extends Controller
 
     public function testUpload(Request $request)
     {
-        print_r($_POST['customer_id']);
-        print_r($request->file('file'));
+        $image = base64_encode(file_get_contents($request->file('file')->pat‌​h()));
+
+        print_r($image);
     }
 
     public function updateImageDetectEvent($customer_id)
