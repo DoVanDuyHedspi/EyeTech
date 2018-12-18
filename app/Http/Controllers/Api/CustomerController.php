@@ -94,7 +94,13 @@ class CustomerController extends Controller
             return response()->json($response, 404);
         }
 
-        $avatar = $this->checkImageNull($customer->image_url_array[0]);
+        $image_url_array = $customer->image_url_array;
+        foreach ($image_url_array as $url) {
+            $avatar_url = $url;
+            break;
+        }
+
+        $avatar = $this->checkImageNull($avatar_url);
 
         return (new CustomerResource($customer))
             ->additional([
