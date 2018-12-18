@@ -4,17 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Customer;
 use App\Event;
+use App\Http\Requests\InsertImageFormRequest;
 use App\Http\Requests\RemoveImageFormRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use GuzzleHttp\Exception\GuzzleException;
+
 
 class GalleryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     protected $urlHeader, $pathHeader;
 
     public function __construct()
@@ -28,23 +26,11 @@ class GalleryController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $customer = Customer::find($id);
@@ -67,24 +53,11 @@ class GalleryController extends Controller
         return response()->json($response, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         //
@@ -103,6 +76,81 @@ class GalleryController extends Controller
         ];
 
         return response()->json($response, 200);
+    }
+
+    public function insertImage(InsertImageFormRequest $request)
+    {
+        $data = $request->all();
+
+        $old_image_base64_array = $this->getOldImageBase64Array($data['customer_id']);
+        $new_image_base64_array = $data['new_image_base64_url'];
+
+        //update customer vector, image_url_array
+        $this->handleNewImageBase64Array($data['customer_id'], $old_image_base64_array, $new_image_base64_array);
+        $this->updateImageDetectEvent($data['customer_id']);
+
+        $response = [
+            'message' => 'Insert images successfully!'
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    public function updateImageDetectEvent($customer_id)
+    {
+        $customer = Customer::find($customer_id);
+        $events = Event::where('customer_id', '=', $customer_id)->get();
+
+        foreach ($events as $event) {
+            $event->image_detection_url_array = $customer->image_url_array;
+            $event->save();
+        }
+    }
+
+    public function handleNewImageBase64Array($customer_id, $old_array, $new_array)
+    {
+        $customer = Customer::find($customer_id);
+        $client = new \GuzzleHttp\Client();
+        try {
+            $res = $client->request('POST', 'http://202.191.56.249:8080/embed', [
+                'form_params' => [
+                    'old_image_base64_array' => $old_array,
+                    'new_image_base64_array' => $new_array,
+                ]
+            ]);
+
+        } catch (GuzzleException $e) {
+            //
+        }
+        $data = json_decode($res->getBody()->getContents());
+        $new_image_base64_array = $data->new_image_base64_array;
+        $customer->image_url_array = $this->generateImagesUrl($customer_id, $new_image_base64_array);
+        $customer->vector = $data->vector;
+        $customer->save();
+    }
+
+    public function generateImagesUrl($customer_id, $new_image_base64_array)
+    {
+        $customer = Customer::find($customer_id);
+        $image_url_array = $customer->image_url_array;
+
+        foreach ($new_image_base64_array as $image_base64) {
+            $image_base64_decode = base64_decode($image_base64);
+            $pathBody = 'images/cu/' . $customer_id . '/';
+            $path = $this->pathHeader . $pathBody;
+
+            if (!file_exists($path)) {
+                mkdir($path, 0777, true);
+            }
+            $imagePathBody = str_random(10) . '.jpg';
+            $imagePath = $path . $imagePathBody;
+            if (file_put_contents($imagePath, $image_base64_decode)) {
+                $image_url = $this->urlHeader . $pathBody . $imagePathBody;
+                array_push($image_url_array, $image_url);
+            }
+        }
+
+        return $image_url_array;
     }
 
     public function destroyImage($imageUrl)
@@ -127,6 +175,7 @@ class GalleryController extends Controller
         }
         $customer->image_url_array = $image_url_array;
         $customer->save();
+        $this->updateCustomerVector($customer_id, $image_url_array);
     }
 
     public function updateImageUrlArrayEvent($customer_id, $image_url)
@@ -158,4 +207,43 @@ class GalleryController extends Controller
         }
     }
 
+    public function getOldImageBase64Array($customer_id)
+    {
+        $customer = Customer::find($customer_id);
+        $image_base64_array = [];
+        foreach ($customer->image_url_array as $url) {
+            $imageUrlBody = str_replace($this->urlHeader, '', $url);
+            $pathImg = $this->pathHeader . $imageUrlBody;
+
+            if(file_exists($pathImg)) {
+                $file = fopen($pathImg, 'r') or die("Unable to open file!");
+                $image = fread($file, filesize($pathImg));
+                $base64_image = base64_encode($image);
+                array_push($image_base64_array, $base64_image);
+                fclose($file);
+            }
+        }
+        return $image_base64_array;
+    }
+
+    public function updateCustomerVector($customer_id)
+    {
+        $customer = Customer::find($customer_id);
+        $image_base64_array = $this->getOldImageBase64Array($customer_id);
+
+        $client = new \GuzzleHttp\Client();
+        try {
+            $res = $client->request('POST', 'http://103.63.108.26:8080/embed', [
+                'form_params' => [
+                    'old_image_base64_array' => $image_base64_array,
+                ]
+            ]);
+
+        } catch (GuzzleException $e) {
+            //
+        }
+        $data = json_decode($res->getBody()->getContents());
+        $customer->vector = $data->vector;
+        $customer->save();
+    }
 }

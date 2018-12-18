@@ -38,6 +38,7 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('feedbacks/format', 'Api\FeedbackController@formatFeedbacks');
     Route::apiResource('feedbacks', 'Api\FeedbackController');
     Route::delete('galleries/image/destroy', 'Api\GalleryController@removeImage');
+    Route::post('galleries/image/insert', 'Api\GalleryController@insertImage');
     Route::apiResource('galleries', 'Api\GalleryController');
 
     Route::group(['middleware' => 'auth:api'], function () {
