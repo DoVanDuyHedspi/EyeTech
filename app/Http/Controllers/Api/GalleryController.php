@@ -68,11 +68,12 @@ class GalleryController extends Controller
         $data = $request->all();
 
         $this->destroyImage($data['image_url']);
-        $this->updateImageUrlArrayCustomer($data['customer_id'], $data['image_url']);
+        $test = $this->updateImageUrlArrayCustomer($data['customer_id'], $data['image_url']);
         $this->updateImageUrlArrayEvent($data['customer_id'], $data['image_url']);
 
         $response = [
-            'message' => 'Delete image successfully!'
+            'message' => 'Delete image successfully!',
+            'jsonendcode' => $test,
         ];
 
         return response()->json($response, 200);
@@ -175,7 +176,7 @@ class GalleryController extends Controller
         }
         $customer->image_url_array = $image_url_array;
         $customer->save();
-        $this->updateCustomerVector($customer_id, $image_url_array);
+        return $this->updateCustomerVector($customer_id, $image_url_array);
     }
 
     public function updateImageUrlArrayEvent($customer_id, $image_url)
@@ -231,22 +232,24 @@ class GalleryController extends Controller
         $customer = Customer::find($customer_id);
         $image_base64_array = $this->getOldImageBase64Array($customer_id);
 
-        $client = new \GuzzleHttp\Client();
-        try {
-            $res = $client->request('POST', 'http://103.63.108.26:8080/embed', [
-                'form_params' => [
-                    'old_image_base64_array' => json_encode($image_base64_array),
-                ],
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                ]
-            ]);
+//        $client = new \GuzzleHttp\Client();
+//        try {
+//            $res = $client->request('POST', 'http://103.63.108.26:8080/embed', [
+//                'form_params' => [
+//                    'old_image_base64_array' => json_encode($image_base64_array),
+//                ],
+//                'headers' => [
+//                    'Content-Type' => 'application/json',
+//                ]
+//            ]);
+//
+//        } catch (GuzzleException $e) {
+//            //
+//        }
+//        $data = json_decode($res->getBody()->getContents());
+//        $customer->vector = $data->vector;
+//        $customer->save();
 
-        } catch (GuzzleException $e) {
-            //
-        }
-        $data = json_decode($res->getBody()->getContents());
-        $customer->vector = $data->vector;
-        $customer->save();
+        return json_encode($image_base64_array);
     }
 }
