@@ -99,17 +99,32 @@ class GalleryController extends Controller
 
     public function testUpload(Request $request)
     {
-        $feedback = new Feedback();
-        $feedback->status = $_POST;
-        $feedback->save();
+//        $feedback = new Feedback();
+//        $feedback->status = $_POST;
+//        $feedback->save();
+//
+//        $response = [
+//            'message' => 'test upload',
+//        ];
+//
+//        print_r($_POST['customer_id']);
+//        print_r($_FILES);
+//        return response()->json($response, 200);
 
-        $response = [
-            'message' => 'test upload',
-        ];
+        if($request->file('file'))
+        {
+            $image = $request->file('file');
+            $name = time().$image->getClientOriginalName();
+            $image->move(public_path().'/images/upload', $name);
+        }
 
-        print_r($_POST['customer_id']);
-        print_r($_FILES);
-        return response()->json($response, 200);
+        $image= new Image();
+        $image->image_name = $name;
+        $image->save();
+
+        return response()->json(['success' => 'You have successfully uploaded an image'], 200);
+
+
     }
 
     public function updateImageDetectEvent($customer_id)
