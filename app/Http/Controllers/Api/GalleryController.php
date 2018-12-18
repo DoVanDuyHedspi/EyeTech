@@ -233,13 +233,12 @@ class GalleryController extends Controller
 
         $client = new \GuzzleHttp\Client();
         try {
-            $data = [
-                'old_image_base64_array' => json_encode($image_base64_array),
-                'new_image_base64_array' => json_encode([]),
-            ];
 
             $res = $client->request('POST', 'http://103.63.108.26:8080/embed', [
-                'form_params' => json_encode($data),
+                'form_params' => [
+                    'old_image_base64_array' => json_encode($image_base64_array),
+                    'new_image_base64_array' => '',
+                ],
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ]
