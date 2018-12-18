@@ -57,9 +57,11 @@ class GalleryController extends Controller
         }
 
         $galleries = $customer->image_url_array;
+
         $response = [
             'message' => 'Galleries image of ' . $customer->name,
             'galleries' => $galleries,
+            'quantily' => sizeof($galleries),
         ];
 
         return response()->json($response, 200);
