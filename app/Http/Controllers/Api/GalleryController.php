@@ -79,19 +79,26 @@ class GalleryController extends Controller
         return response()->json($response, 200);
     }
 
-    public function insertImage(Request $request)
+    public function uploadImage(Request $request)
     {
-        $data = $request->all();
+        $customer_id = $_POST['customer_id'];
+        if($request->file('file'))
+        {
+            $image = $request->file('file');
+            $new_image_base64 = base64_encode($image);
+        }
 
-        $old_image_base64_array = $this->getOldImageBase64Array($data['customer_id']);
-        $new_image_base64_array = $data['new_image_base64_url'];
+        $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
 
-        //update customer vector, image_url_array
-        $this->handleNewImageBase64Array($data['customer_id'], $old_image_base64_array, $new_image_base64_array);
-        $this->updateImageDetectEvent($data['customer_id']);
+
+        //update customer vector, update image_url_array
+        $this->handleNewImageBase64($customer_id, $old_image_base64_array, $new_image_base64);
+
+        //update vector image_detection_array
+        $this->updateImageDetectEvent($customer_id);
 
         $response = [
-            'message' => 'Insert images successfully!'
+            'message' => 'Upload images successfully!'
         ];
 
         return response()->json($response, 200);
@@ -99,28 +106,8 @@ class GalleryController extends Controller
 
     public function testUpload(Request $request)
     {
-//        $feedback = new Feedback();
-//        $feedback->status = $_POST;
-//        $feedback->save();
-//
-//        $response = [
-//            'message' => 'test upload',
-//        ];
-//
-//        print_r($_POST['customer_id']);
-//        print_r($_FILES);
-//        return response()->json($response, 200);
-
-        if($request->file('file'))
-        {
-            $image = $request->file('file');
-            $name = time().$image->getClientOriginalName();
-            $image->move(public_path().'/images', $name);
-        }
-
-        return response()->json(['success' => 'You have successfully uploaded an image'], 200);
-
-
+        print_r($_POST['customer_id']);
+        print_r($request->file('file'));
     }
 
     public function updateImageDetectEvent($customer_id)
@@ -134,15 +121,16 @@ class GalleryController extends Controller
         }
     }
 
-    public function handleNewImageBase64Array($customer_id, $old_array, $new_array)
+    public function handleNewImageBase64Array($customer_id, $old_array, $new_image)
     {
         $customer = Customer::find($customer_id);
+
         $client = new \GuzzleHttp\Client();
         try {
             $res = $client->request('POST', 'http://202.191.56.249:8080/embed', [
                 'form_params' => [
                     'old_image_base64_array' => $old_array,
-                    'new_image_base64_array' => $new_array,
+                    'new_image_base64' => $new_image,
                 ]
             ]);
 
@@ -150,31 +138,30 @@ class GalleryController extends Controller
             //
         }
         $data = json_decode($res->getBody()->getContents());
-        $new_image_base64_array = $data->new_image_base64_array;
-        $customer->image_url_array = $this->generateImagesUrl($customer_id, $new_image_base64_array);
+        $new_image_base64 = $data->new_image_base64;
+
+        $customer->image_url_array = $this->generateImagesUrl($customer_id, $new_image_base64);
         $customer->vector = $data->vector;
         $customer->save();
     }
 
-    public function generateImagesUrl($customer_id, $new_image_base64_array)
+    public function generateImagesUrl($customer_id, $new_image_base64)
     {
         $customer = Customer::find($customer_id);
         $image_url_array = $customer->image_url_array;
 
-        foreach ($new_image_base64_array as $image_base64) {
-            $image_base64_decode = base64_decode($image_base64);
-            $pathBody = 'images/cu/' . $customer_id . '/';
-            $path = $this->pathHeader . $pathBody;
+        $image_base64_decode = base64_decode($new_image_base64);
+        $pathBody = 'images/cu/' . $customer_id . '/';
+        $path = $this->pathHeader . $pathBody;
 
-            if (!file_exists($path)) {
-                mkdir($path, 0777, true);
-            }
-            $imagePathBody = str_random(10) . '.jpg';
-            $imagePath = $path . $imagePathBody;
-            if (file_put_contents($imagePath, $image_base64_decode)) {
-                $image_url = $this->urlHeader . $pathBody . $imagePathBody;
-                array_push($image_url_array, $image_url);
-            }
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+        $imagePathBody = str_random(10) . '.jpg';
+        $imagePath = $path . $imagePathBody;
+        if (file_put_contents($imagePath, $image_base64_decode)) {
+            $image_url = $this->urlHeader . $pathBody . $imagePathBody;
+            array_push($image_url_array, $image_url);
         }
 
         return $image_url_array;
