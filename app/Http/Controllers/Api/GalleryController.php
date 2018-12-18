@@ -107,8 +107,19 @@ class GalleryController extends Controller
     public function testUpload(Request $request)
     {
         $image = base64_encode(file_get_contents($request->file('file')));
+        $image_base64_decode = base64_decode($image);
 
-        print_r($image);
+        $path = '/Applications/MAMP/htdocs/EyeTech/public/images/';
+
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        $imagePathBody = str_random(10) . '.jpg';
+        $imagePath = $path . $imagePathBody;
+        if (file_put_contents($imagePath, $image_base64_decode)) {
+            print_r($image_base64_decode);
+        }
     }
 
     public function updateImageDetectEvent($customer_id)
