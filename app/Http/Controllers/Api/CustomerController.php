@@ -6,6 +6,7 @@ use App\Customer;
 use App\Event;
 use App\Http\Requests\CustomerFormRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\NumberVistedBranchFormRequest;
 use App\Http\Requests\VectorIdFormRequest;
 use App\Http\Resources\Customer as CustomerResource;
 use App\Http\Resources\CustomerIdVector as CustomerIdVectorResource;
@@ -228,6 +229,19 @@ class CustomerController extends Controller
             ])
             ->response()
             ->setStatusCode(200);
+    }
+
+    public function getNumberVistedBranch(NumberVistedBranchFormRequest $request)
+    {
+        $data = $request->all();
+        $events = Event::where('customer_id', '=', $data['customer_id'])->get();
+
+        $response = [
+            'message' => 'Number visted',
+            'numberVisted' => sizeof($events),
+        ];
+
+        return response()->json($response, 200);
     }
 
     public function handleRequest(CustomerFormRequest $request)
