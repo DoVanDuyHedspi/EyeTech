@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Customer;
+use App\Http\Requests\RemoveImageFormRequest;
+use App\Http\Resources\Event;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -13,6 +15,14 @@ class GalleryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    protected $urlHeader, $pathHeader;
+
+    public function __construct()
+    {
+        $this->urlHeader = 'http://202.191.56.249/';
+        $this->pathHeader = '/var/www/html/';
+    }
+
     public function index()
     {
         //
@@ -77,4 +87,73 @@ class GalleryController extends Controller
     {
         //
     }
+
+    public function removeImage(RemoveImageFormRequest $request)
+    {
+        $data = $request->all();
+
+        $this->destroyImage($data['image_url']);
+        $this->updateImageUrlArrayCustomer($data['customer_id'], $data['image_url']);
+        $this->updateImageUrlArrayEvent($data['customer_id'], $data['image_url']);
+
+        $response = [
+            'message' => 'Delete image successfully!'
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    public function destroyImage($imageUrl)
+    {
+        $imageUrlBody = str_replace($this->urlHeader, '', $imageUrl);
+        $pathImg = $this->pathHeader . $imageUrlBody;
+        if (file_exists($pathImg)) {
+            unlink($pathImg) or die('Cannot delete file');
+        }
+    }
+
+    public function updateImageUrlArrayCustomer($customer_id, $image_url)
+    {
+        $customer = Customer::find($customer_id);
+        $image_url_array = $customer->image_url_array;
+        foreach ($image_url_array as $index=>$url) {
+            if ($url == $image_url) {
+                //remove from array
+                unset($image_url_array[$index]);
+                break;
+            }
+        }
+        $customer->image_url_array = $image_url_array;
+        $customer->save();
+    }
+
+    public function updateImageUrlArrayEvent($customer_id, $image_url)
+    {
+        $events = Event::where('customer_id', '=', $customer_id)->get();
+
+        foreach ($events as $event) {
+            $image_detection_url_array = $event->image_detection_url_array;
+            $image_camera_url_array = $event->image_camera_url_array;
+
+            foreach ($image_detection_url_array as $index=>$url) {
+                if ($url == $image_url) {
+                    //remove from array
+                    unset($image_detection_url_array[$index]);
+                    break;
+                }
+            }
+
+            foreach ($image_camera_url_array as $index=>$url) {
+                if ($url == $image_url) {
+                    //remove from array
+                    unset($image_camera_url_array[$index]);
+                    break;
+                }
+            }
+            $event->image_detection_url_array = $image_detection_url_array;
+            $event->image_camera_url_array = $image_camera_url_array;
+            $event->save();
+        }
+    }
+
 }
