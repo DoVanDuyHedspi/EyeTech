@@ -107,7 +107,7 @@ class GalleryController extends Controller
             'message' => 'test upload',
         ];
 
-        print_r($_POST);
+        print_r($_POST->customer_id);
         return response()->json($response, 200);
     }
 
