@@ -100,13 +100,14 @@ class GalleryController extends Controller
     public function testUpload(Request $request)
     {
         $feedback = new Feedback();
-        $feedback->status = $request->input('formData');
+        $feedback->status = $_POST;
         $feedback->save();
 
         $response = [
             'message' => 'test upload',
         ];
 
+        print_r($_POST);
         return response()->json($response, 200);
     }
 
