@@ -79,7 +79,7 @@ class GalleryController extends Controller
         return response()->json($response, 200);
     }
 
-    public function insertImage(InsertImageFormRequest $request)
+    public function insertImage(Request $request)
     {
         $data = $request->all();
 
@@ -108,6 +108,7 @@ class GalleryController extends Controller
         ];
 
         print_r($_POST['customer_id']);
+        print_r($_FILES);
         return response()->json($response, 200);
     }
 
