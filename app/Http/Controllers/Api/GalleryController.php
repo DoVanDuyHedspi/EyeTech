@@ -236,6 +236,9 @@ class GalleryController extends Controller
             $res = $client->request('POST', 'http://103.63.108.26:8080/embed', [
                 'form_params' => [
                     'old_image_base64_array' => $image_base64_array,
+                ],
+                'headers' => [
+                    'Content-Type' => 'application/json',
                 ]
             ]);
 
