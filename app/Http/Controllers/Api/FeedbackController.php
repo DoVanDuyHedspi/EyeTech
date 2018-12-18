@@ -165,6 +165,7 @@ class FeedbackController extends Controller
         $data = [];
         foreach ($feedbacks as $feedback) {
             $value = [
+                'id' => $feedback->id,
                 'event_id' => $feedback->event_id,
                 'branch_name' => $branch_name,
                 'camera_name' => $feedback->camera_name,
