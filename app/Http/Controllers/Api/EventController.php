@@ -204,7 +204,13 @@ class EventController extends Controller
             $numberImageDetection = 1;
             $slice_image_camera = $this->handleImage($event->image_camera_url_array, $numberImageCamera);
             $slice_image_detection = $this->handleImage($event->image_detection_url_array, $numberImageDetection);
-            $avatar = $this->checkImageNull($event->image_camera_url_array[0]);
+
+            $image_camera_url_array = $event->image_camera_url_array;
+            foreach ($image_camera_url_array as $url) {
+                $avatar_url = $url;
+                break;
+            }
+            $avatar = $this->checkImageNull($avatar_url);
 
             $timeInDefault = $event->time_in;
             $timeInHandle = $this->handleTimeIn($timeInDefault);
@@ -257,15 +263,21 @@ class EventController extends Controller
 
             $timeInDefault = $event->time_in;
             $timeInHandle = $this->handleTimeIn($timeInDefault);
-            $slice_image_detection = $this->checkImageNull($event->image_detection_url_array[0]);
             $slice_image_camera = $this->checkImageNull($event->image_camera_url_array[0]);
             $customer_profile_url = $request->input('route_header') . '/' . $event->customer_id;
+
+            $image_detection_url_array = $event->image_detection_url_array;
+            foreach ($image_detection_url_array as $url) {
+                $avatar_url = $url;
+                break;
+            }
+            $avatar = $this->checkImageNull($avatar_url);
 
             $quick_event_format = [
                 'name' => $customer->name,
                 'time_in' => $timeInHandle,
                 'type' => $customer->type,
-                'avatar' => $slice_image_detection,
+                'avatar' => $avatar,
                 'image_camera_url_array' => $slice_image_camera,
                 'customer_profile_url' => $customer_profile_url,
             ];
