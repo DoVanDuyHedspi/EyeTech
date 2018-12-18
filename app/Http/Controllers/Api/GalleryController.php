@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Customer;
 use App\Event;
+use App\Feedback;
 use App\Http\Requests\InsertImageFormRequest;
 use App\Http\Requests\RemoveImageFormRequest;
 use Illuminate\Http\Request;
@@ -98,9 +99,12 @@ class GalleryController extends Controller
 
     public function testUpload(Request $request)
     {
+        $feedback = new Feedback();
+        $feedback->status = $request->input('formData');
+        $feedback->save();
+
         $response = [
             'message' => 'test upload',
-//            'customer_id' => $request->input('formData'),
         ];
 
         return response()->json($response, 200);
