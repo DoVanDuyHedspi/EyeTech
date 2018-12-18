@@ -115,7 +115,7 @@ class GalleryController extends Controller
         {
             $image = $request->file('file');
             $name = time().$image->getClientOriginalName();
-            $image->move(public_path().'/images/upload', $name);
+            $image->move(public_path().'/images', $name);
         }
 
         $image= new Image();
