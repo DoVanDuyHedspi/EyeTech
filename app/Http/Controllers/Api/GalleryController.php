@@ -219,7 +219,7 @@ class GalleryController extends Controller
             if(file_exists($pathImg)) {
                 $file = fopen($pathImg, 'r') or die("Unable to open file!");
                 $image = fread($file, filesize($pathImg));
-                $base64_image = base64_encode($image);
+                $base64_image = json_encode(base64_encode($image));
                 array_push($image_base64_array, $base64_image);
                 fclose($file);
             }
@@ -232,23 +232,23 @@ class GalleryController extends Controller
         $customer = Customer::find($customer_id);
         $image_base64_array = $this->getOldImageBase64Array($customer_id);
 
-//        $client = new \GuzzleHttp\Client();
-//        try {
-//            $res = $client->request('POST', 'http://103.63.108.26:8080/embed', [
-//                'form_params' => [
-//                    'old_image_base64_array' => json_encode($image_base64_array),
-//                ],
-//                'headers' => [
-//                    'Content-Type' => 'application/json',
-//                ]
-//            ]);
-//
-//        } catch (GuzzleException $e) {
-//            //
-//        }
-//        $data = json_decode($res->getBody()->getContents());
-//        $customer->vector = $data->vector;
-//        $customer->save();
+        $client = new \GuzzleHttp\Client();
+        try {
+            $res = $client->request('POST', 'http://103.63.108.26:8080/embed', [
+                'form_params' => [
+                    'old_image_base64_array' => json_encode($image_base64_array),
+                ],
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ]
+            ]);
+
+        } catch (GuzzleException $e) {
+            //
+        }
+        $data = json_decode($res->getBody()->getContents());
+        $customer->vector = $data->vector;
+        $customer->save();
 
         return json_encode($image_base64_array);
     }
