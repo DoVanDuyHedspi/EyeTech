@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Customer;
+use App\Event;
 use App\Http\Requests\RemoveImageFormRequest;
-use App\Http\Resources\Event;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
