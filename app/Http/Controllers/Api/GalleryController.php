@@ -100,7 +100,7 @@ class GalleryController extends Controller
     {
         $response = [
             'message' => 'test upload',
-            'customer_id' => $request->input('customer_id')
+            'customer_id' => $request->input('formData'),
         ];
 
         return response()->json($response, 200);
