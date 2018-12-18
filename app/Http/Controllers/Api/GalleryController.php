@@ -96,6 +96,16 @@ class GalleryController extends Controller
         return response()->json($response, 200);
     }
 
+    public function testUpload(Request $request)
+    {
+        $response = [
+            'message' => 'test upload',
+            'file' => $request->file('file')
+        ];
+
+        return response()->json($response, 200);
+    }
+
     public function updateImageDetectEvent($customer_id)
     {
         $customer = Customer::find($customer_id);
