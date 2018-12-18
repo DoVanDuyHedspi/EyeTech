@@ -238,9 +238,6 @@ class GalleryController extends Controller
                 'form_params' => [
                     'old_image_base64_array' => json_encode($image_base64_array),
                     'new_image_base64_array' => '',
-                ],
-                'headers' => [
-                    'Content-Type' => 'application/json',
                 ]
             ]);
 
