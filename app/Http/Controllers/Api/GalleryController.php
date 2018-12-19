@@ -118,6 +118,7 @@ class GalleryController extends Controller
 //        if (file_put_contents($imagePath, $image_base64_decode)) {
 //            print_r($image_base64_decode);
 //        }
+//        print 1;
 //    }
 
     public function updateImageDetectEvent($customer_id)
