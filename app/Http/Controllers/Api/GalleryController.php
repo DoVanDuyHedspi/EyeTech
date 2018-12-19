@@ -102,7 +102,7 @@ class GalleryController extends Controller
 //
 //        return response()->json($response, 200);
 
-        print_r($old_image_base64_array);
+        print 1;
     }
 
 //    public function testUpload(Request $request)
