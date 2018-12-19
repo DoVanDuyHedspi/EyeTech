@@ -82,10 +82,13 @@ class GalleryController extends Controller
     public function uploadImage(Request $request)
     {
         $customer_id = $_POST['customer_id'];
-        if($request->file('file'))
-        {
-            $new_image_base64 = base64_encode(file_get_contents($request->file('file')));
-        }
+//        if($request->file('file'))
+//        {
+//            $new_image_base64 = base64_encode(file_get_contents($request->file('file')));
+//
+//        }
+        $new_image_base64 = base64_encode(file_get_contents($request->file('file')));
+
 
 
         $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
