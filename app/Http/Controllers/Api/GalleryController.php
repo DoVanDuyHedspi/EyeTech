@@ -89,17 +89,21 @@ class GalleryController extends Controller
 
         $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
 
-        //update customer vector, update image_url_array
-        $this->handleNewImageBase64($customer_id, $old_image_base64_array, $new_image_base64);
+//        //update customer vector, update image_url_array
+//        $this->handleNewImageBase64($customer_id, $old_image_base64_array, $new_image_base64);
+//
+//        //update vector image_detection_array
+//        $this->updateImageDetectEvent($customer_id);
+//
+//        $response = [
+//            'message' => 'Upload images successfully!'
+//        ];
+//
+//        return response()->json($response, 200);
 
-        //update vector image_detection_array
-        $this->updateImageDetectEvent($customer_id);
-
-        $response = [
-            'message' => 'Upload images successfully!'
-        ];
-
-        return response()->json($response, 200);
+        print_r($new_image_base64);
+        print_r(typeOf($new_image_base64));
+        print_r($old_image_base64_array);
     }
 
 //    public function testUpload(Request $request)
