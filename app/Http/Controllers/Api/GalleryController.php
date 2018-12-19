@@ -87,6 +87,7 @@ class GalleryController extends Controller
             $new_image_base64 = base64_encode(file_get_contents($request->file('file')));
         }
 
+
         $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
 
 //        //update customer vector, update image_url_array
@@ -101,8 +102,6 @@ class GalleryController extends Controller
 //
 //        return response()->json($response, 200);
 
-        print_r($new_image_base64);
-        print_r(typeOf($new_image_base64));
         print_r($old_image_base64_array);
     }
 
