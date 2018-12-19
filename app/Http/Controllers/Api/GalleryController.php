@@ -138,7 +138,7 @@ class GalleryController extends Controller
 
         $client = new \GuzzleHttp\Client();
         try {
-            $res = $client->request('POST', 'http://202.191.56.249:8080/embed', [
+            $res = $client->request('POST', 'http://103.63.108.26:8080/embed', [
                 'form_params' => [
                     'old_image_base64_array' => $old_array,
                     'new_image_base64' => $new_image,
