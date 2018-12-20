@@ -89,10 +89,10 @@ class GalleryController extends Controller
         }
 
 
-        $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
-
-        //update customer vector, update image_url_array
-        $this->handleNewImageBase64($customer_id, $old_image_base64_array, $image_base64);
+//        $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
+//
+//        //update customer vector, update image_url_array
+//        $this->handleNewImageBase64($customer_id, $old_image_base64_array, $image_base64);
 
         //update vector image_detection_array
 //        $this->updateImageDetectEvent($customer_id);
@@ -102,6 +102,12 @@ class GalleryController extends Controller
 //        ];
 //
 //        return response()->json($response, 200);
+
+        print 1;
+        echo "<br>";
+        print_r($image_base64);
+
+        return response()->json($image_base64, 200);
     }
 
     public function testUpload(Request $request)
