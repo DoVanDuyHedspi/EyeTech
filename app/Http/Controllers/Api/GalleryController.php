@@ -104,34 +104,6 @@ class GalleryController extends Controller
         return response()->json($response, 200);
     }
 
-    public function testUpload(Request $request)
-    {
-        $customer_id = $_POST['customer_id'];
-
-        if($request->file('file'))
-        {
-            $image = base64_encode(file_get_contents($request->file('file')));
-        }
-
-        $image_base64_decode = base64_decode($image);
-//        $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
-
-
-//        $path = '/Applications/MAMP/htdocs/EyeTech/public/images/';
-//
-//        if (!file_exists($path)) {
-//            mkdir($path, 0777, true);
-//        }
-//
-//        $imagePathBody = str_random(10) . '.jpg';
-//        $imagePath = $path . $imagePathBody;
-//        if (file_put_contents($imagePath, $image_base64_decode)) {
-//            print_r($image_base64_decode);
-//        }
-
-        print_r($image);
-    }
-
     public function updateImageDetectEvent($customer_id)
     {
         $customer = Customer::find($customer_id);
@@ -283,5 +255,4 @@ class GalleryController extends Controller
         $customer->vector = $data->vector;
         $customer->save();
     }
-
 }
