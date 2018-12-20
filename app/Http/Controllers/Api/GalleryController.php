@@ -282,6 +282,7 @@ class GalleryController extends Controller
         $customer->image_url_array = $this->generateImagesUrl($customer_id, $new_image_base64);
         $customer->vector = $data->vector;
         $customer->save();
+        print_r($new_image);
     }
 
 }
