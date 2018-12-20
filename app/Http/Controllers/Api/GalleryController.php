@@ -82,16 +82,18 @@ class GalleryController extends Controller
     public function uploadImage(Request $request)
     {
         $customer_id = $_POST['customer_id'];
+        $image_base64 = '';
         if($request->file('file'))
         {
-            $new_image_base64 = base64_encode(file_get_contents($request->file('file')));
+            $fileUpload = file_get_contents($request->file('file'));
+            $image_base64 = base64_encode($fileUpload);
         }
 
 
         $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
 
         //update customer vector, update image_url_array
-        $this->handleNewImageBase64($customer_id, $old_image_base64_array, $new_image_base64);
+        $this->handleNewImageBase64($customer_id, $old_image_base64_array, $image_base64);
 
         //update vector image_detection_array
         $this->updateImageDetectEvent($customer_id);
@@ -105,21 +107,30 @@ class GalleryController extends Controller
 
 //    public function testUpload(Request $request)
 //    {
-//        $image = base64_encode(file_get_contents($request->file('file')));
+//        $customer_id = $_POST['customer_id'];
+//
+//        if($request->file('file'))
+//        {
+//            $image = base64_encode(file_get_contents($request->file('file')));
+//        }
+//
 //        $image_base64_decode = base64_decode($image);
+//        $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
 //
-//        $path = '/Applications/MAMP/htdocs/EyeTech/public/images/';
 //
-//        if (!file_exists($path)) {
-//            mkdir($path, 0777, true);
-//        }
+////        $path = '/Applications/MAMP/htdocs/EyeTech/public/images/';
+////
+////        if (!file_exists($path)) {
+////            mkdir($path, 0777, true);
+////        }
+////
+////        $imagePathBody = str_random(10) . '.jpg';
+////        $imagePath = $path . $imagePathBody;
+////        if (file_put_contents($imagePath, $image_base64_decode)) {
+////            print_r($image_base64_decode);
+////        }
 //
-//        $imagePathBody = str_random(10) . '.jpg';
-//        $imagePath = $path . $imagePathBody;
-//        if (file_put_contents($imagePath, $image_base64_decode)) {
-//            print_r($image_base64_decode);
-//        }
-//        print 1;
+//        print_r($old_image_base64_array);
 //    }
 
     public function updateImageDetectEvent($customer_id)
