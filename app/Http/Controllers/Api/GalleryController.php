@@ -82,7 +82,6 @@ class GalleryController extends Controller
     public function uploadImage(Request $request)
     {
         $customer_id = $_POST['customer_id'];
-        $image_base64 = '';
         if($request->file('file'))
         {
             $fileUpload = file_get_contents($request->file('file'));
@@ -96,13 +95,13 @@ class GalleryController extends Controller
         $this->handleNewImageBase64($customer_id, $old_image_base64_array, $image_base64);
 
         //update vector image_detection_array
-        $this->updateImageDetectEvent($customer_id);
+//        $this->updateImageDetectEvent($customer_id);
 
-        $response = [
-            'message' => 'Upload images successfully!'
-        ];
-
-        return response()->json($response, 200);
+//        $response = [
+//            'message' => 'Upload images successfully!'
+//        ];
+//
+//        return response()->json($response, 200);
     }
 
     public function testUpload(Request $request)
@@ -146,26 +145,30 @@ class GalleryController extends Controller
 
     public function handleNewImageBase64($customer_id, $old_array, $new_image)
     {
-        $customer = Customer::find($customer_id);
+//        $customer = Customer::find($customer_id);
+//
+//        $client = new \GuzzleHttp\Client();
+//        try {
+//            $res = $client->request('POST', 'http://103.63.108.26:8080/embed', [
+//                'form_params' => [
+//                    'old_image_base64_array' => $old_array,
+//                    'new_image_base64' => $new_image,
+//                ]
+//            ]);
+//
+//        } catch (GuzzleException $e) {
+//            //
+//        }
+//        $data = json_decode($res->getBody()->getContents());
+//        $new_image_base64 = $data->new_image_base64;
+//
+//        $customer->image_url_array = $this->generateImagesUrl($customer_id, $new_image_base64);
+//        $customer->vector = $data->vector;
+//        $customer->save();
 
-        $client = new \GuzzleHttp\Client();
-        try {
-            $res = $client->request('POST', 'http://103.63.108.26:8080/embed', [
-                'form_params' => [
-                    'old_image_base64_array' => $old_array,
-                    'new_image_base64' => $new_image,
-                ]
-            ]);
-
-        } catch (GuzzleException $e) {
-            //
-        }
-        $data = json_decode($res->getBody()->getContents());
-        $new_image_base64 = $data->new_image_base64;
-
-        $customer->image_url_array = $this->generateImagesUrl($customer_id, $new_image_base64);
-        $customer->vector = $data->vector;
-        $customer->save();
+        print_r($new_image);
+        echo "<br>";
+        print_r($old_array);
     }
 
     public function generateImagesUrl($customer_id, $new_image_base64)
