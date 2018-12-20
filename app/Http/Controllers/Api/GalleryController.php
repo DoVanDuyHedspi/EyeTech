@@ -90,20 +90,19 @@ class GalleryController extends Controller
         }
 
 
-//        $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
-//
-//        //update customer vector, update image_url_array
-//        $this->handleNewImageBase64($customer_id, $old_image_base64_array, $image_base64);
-//
-//        //update vector image_detection_array
-//        $this->updateImageDetectEvent($customer_id);
-//
-//        $response = [
-//            'message' => 'Upload images successfully!'
-//        ];
-//
-//        return response()->json($response, 200);
-        print_r($image_base64);
+        $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
+
+        //update customer vector, update image_url_array
+        $this->handleNewImageBase64($customer_id, $old_image_base64_array, $image_base64);
+
+        //update vector image_detection_array
+        $this->updateImageDetectEvent($customer_id);
+
+        $response = [
+            'message' => 'Upload images successfully!'
+        ];
+
+        return response()->json($response, 200);
     }
 
     public function testUpload(Request $request)
@@ -116,7 +115,7 @@ class GalleryController extends Controller
         }
 
         $image_base64_decode = base64_decode($image);
-        $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
+//        $old_image_base64_array = $this->getOldImageBase64Array($customer_id);
 
 
 //        $path = '/Applications/MAMP/htdocs/EyeTech/public/images/';
@@ -131,7 +130,7 @@ class GalleryController extends Controller
 //            print_r($image_base64_decode);
 //        }
 
-        print_r($old_image_base64_array);
+        print_r($image);
     }
 
     public function updateImageDetectEvent($customer_id)
