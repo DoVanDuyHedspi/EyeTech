@@ -6,6 +6,7 @@ use App\Customer;
 use App\Event;
 use App\Http\Requests\CustomerFormRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\NumberVistedBranchFormRequest;
 use App\Http\Requests\VectorIdFormRequest;
 use App\Http\Resources\Customer as CustomerResource;
 use App\Http\Resources\CustomerIdVector as CustomerIdVectorResource;
@@ -94,7 +95,13 @@ class CustomerController extends Controller
             return response()->json($response, 404);
         }
 
-        $avatar = $this->checkImageNull($customer->image_url_array[0]);
+        $image_url_array = $customer->image_url_array;
+        foreach ($image_url_array as $url) {
+            $avatar_url = $url;
+            break;
+        }
+
+        $avatar = $this->checkImageNull($avatar_url);
 
         return (new CustomerResource($customer))
             ->additional([
@@ -222,6 +229,19 @@ class CustomerController extends Controller
             ])
             ->response()
             ->setStatusCode(200);
+    }
+
+    public function getNumberVistedBranch(NumberVistedBranchFormRequest $request)
+    {
+        $data = $request->all();
+        $events = Event::where('customer_id', '=', $data['customer_id'])->get();
+
+        $response = [
+            'message' => 'Number visted',
+            'numberVisted' => sizeof($events),
+        ];
+
+        return response()->json($response, 200);
     }
 
     public function handleRequest(CustomerFormRequest $request)

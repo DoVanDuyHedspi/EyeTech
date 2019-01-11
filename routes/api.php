@@ -31,11 +31,15 @@ Route::group(['prefix' => 'v1'], function() {
     Route::apiResource('user-types', 'Api\Admin\UserTypeController')->only([
         'index',
     ]);
+    Route::get('customers/number-visted', 'Api\CustomerController@getNumberVistedBranch');
     Route::get('customers/{customer}', 'Api\CustomerController@show');
     Route::patch('customers/{customer}', 'Api\CustomerController@update');
     Route::delete('customers/{customer}', 'Api\CustomerController@destroy');
     Route::post('feedbacks/format', 'Api\FeedbackController@formatFeedbacks');
     Route::apiResource('feedbacks', 'Api\FeedbackController');
+    Route::delete('galleries/image/destroy', 'Api\GalleryController@removeImage');
+    Route::post('galleries/images/upload', 'Api\GalleryController@uploadImage');
+    Route::apiResource('galleries', 'Api\GalleryController');
 
     Route::group(['middleware' => 'auth:api'], function () {
 
