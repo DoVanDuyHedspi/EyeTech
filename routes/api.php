@@ -41,6 +41,12 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('galleries/images/upload', 'Api\GalleryController@uploadImage');
     Route::apiResource('galleries', 'Api\GalleryController');
 
+    Route::get('analytical/{branch}/total-customers', 'Api\AnalyticalController@getTotalCustomers');
+    Route::get('analytical/{branch}/today-customers', 'Api\AnalyticalController@getTodayCustomers');
+    Route::get('analytical/{branch}/growth-rate', 'Api\AnalyticalController@getGrowthRate');
+    Route::get('analytical/{branch}/new-customers', 'Api\AnalyticalController@getNewCustomers');
+    Route::get('analytical/{branch}/customer-types', 'Api\AnalyticalController@getCustomerTypes');
+
     Route::group(['middleware' => 'auth:api'], function () {
 
         Route::get('users/logout', 'Api\UserController@logout');
