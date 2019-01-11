@@ -65,7 +65,7 @@ class AnalyticalController extends Controller
 
     public function getTotalCustomers($branch_id)
     {
-        $count = Event::where('branch_id', '=', 5)->distinct('customer_id')->count('customer_id');
+        $count = Event::where('branch_id', '=', 4)->distinct('customer_id')->count('customer_id');
         $response = [
             'message' => $count
         ];
